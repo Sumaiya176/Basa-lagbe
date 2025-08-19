@@ -50,7 +50,8 @@ const AboutUs = () => {
               Easy to Use
             </h3>
             <p className="text-gray-600">
-              Post, search, and book flats with just a few clicks.
+              Post, search, and communicate with flat owner with just a few
+              clicks.
             </p>
           </div>
           <div className="bg-indigo-50 p-6 rounded-xl text-center shadow-sm">
