@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 const AboutUs = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-12">
-      {/* Hero Section */}
       <section className="text-center space-y-4">
         <h1 className="text-4xl font-bold text-gray-800">About Us</h1>
         <p className="text-lg text-gray-600">
@@ -12,7 +11,6 @@ const AboutUs = () => {
         </p>
       </section>
 
-      {/* Mission & Vision */}
       <motion.section
         className="grid md:grid-cols-2 gap-8"
         initial={{ opacity: 0, y: 40 }}
@@ -41,7 +39,6 @@ const AboutUs = () => {
         </div>
       </motion.section>
 
-      {/* Why Choose Us */}
       <section className="space-y-6">
         <h2 className="text-3xl font-semibold text-center">Why Choose Us?</h2>
         <div className="grid md:grid-cols-3 gap-6">
@@ -73,17 +70,14 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Team / Contact */}
       <section className="text-center space-y-4">
         <h2 className="text-3xl font-semibold">Meet the Team</h2>
         <p className="text-gray-600">
           We’re a small, passionate team dedicated to solving housing problems
           in Bangladesh.
         </p>
-        {/* You can add team cards here */}
       </section>
 
-      {/* CTA */}
       <section className="bg-indigo-600 text-white p-10 rounded-2xl text-center space-y-4 shadow-lg">
         <h2 className="text-2xl font-semibold">Looking for a flat?</h2>
         <p>Join our platform today and find your dream home with ease.</p>

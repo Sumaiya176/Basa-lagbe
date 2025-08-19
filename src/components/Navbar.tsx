@@ -97,7 +97,7 @@ const Navbar = () => {
             <Link href="/aboutUs">About Us</Link>
           </li>
           <li>
-            <Link href="/">Contact</Link>
+            <Link href="/contact">Contact</Link>
           </li>
           <li>
             {token ? (
