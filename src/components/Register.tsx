@@ -1,25 +1,19 @@
 "use client";
 
-import { useLoginMutation } from "@/redux/features/auth/authApi";
-import { setUser } from "@/redux/features/auth/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
-import { verifyToken } from "@/utils/verifyToken";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { signIn } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
 type Inputs = {
+  userName: string;
   email: string;
   password: string;
+  provider: string;
 };
 
-const Login = () => {
-  const [login] = useLoginMutation();
-  const dispatch = useAppDispatch();
-  const searchParams = useSearchParams();
-
-  const router = useRouter();
+const Register = () => {
+  const [registerInfo] = useRegisterMutation();
   const notify = (text: string) => toast(text);
   const {
     register,
@@ -27,18 +21,14 @@ const Login = () => {
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    // console.log("data", data);
+    data.provider = "credentials";
+    //console.log("data", data);
     try {
-      const result = await login(data).unwrap();
-
+      const result = await registerInfo(data).unwrap();
+      console.log(result, result?.isSuccess);
       if (result?.isSuccess) {
         //console.log(result?.message);
-        const user = verifyToken(result.data.accessToken);
-        console.log("from login.tsx file", user, result.data.accessToken);
-        dispatch(setUser({ user, token: result.data.accessToken }));
         notify(result?.message);
-
-        router.push(searchParams.get("redirect") || "/");
       }
     } catch (err: any) {
       notify(err?.data?.message);
@@ -47,11 +37,17 @@ const Login = () => {
   return (
     <div className="bg-hero bg-cover bg-center h-screen flex justify-center items-center">
       <div className="bg-black bg-opacity-60 z-10 p-16 border border-orange-500 rounded">
-        <p className="text-white text-3xl text-center my-3">Login</p>
+        <p className="text-white text-3xl text-center my-3">Sign Up</p>
         <form onSubmit={handleSubmit(onSubmit)} className="">
           <input
-            defaultValue="email"
-            {...register("email")}
+            defaultValue="Mr. Abc"
+            {...register("userName", { required: true })}
+            className="border border-slate-400 px-3  md:w-72 h-14 py-2 rounded my-5"
+          />
+          <br />
+          <input
+            defaultValue="abx@gmail.com"
+            {...register("email", { required: true })}
             className="border border-slate-400 px-3  md:w-72 h-14 py-2 rounded my-5"
           />
           <br />
@@ -63,7 +59,7 @@ const Login = () => {
           <br />
 
           <input
-            className="bg-orange-500 w-full md:w-72 h-14 text-lg font-semibold tracking-wider cursor-pointer text-white my-10 px-3 py-2 rounded"
+            className="bg-orange-500 w-full cursor-pointer md:w-72 h-14 text-lg font-semibold tracking-wider text-white my-10 px-3 py-2 rounded"
             type="submit"
           />
         </form>
@@ -138,4 +134,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

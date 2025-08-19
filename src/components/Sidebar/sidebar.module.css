@@ -1,0 +1,8 @@
+.sidebarWrapper {
+  background-color: #2196f3;
+}
+
+.menuItemActive {
+  font-weight: bold;
+  color: yellow;
+}

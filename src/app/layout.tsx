@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+//import Navbar from "@/components/Navbar";
+import { Providers } from "@/redux/providers";
 
 const inter = Poppins({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export default function RootLayout({
           <Navbar />
           <div className="min-h-screen">{children}</div>
         </div> */}
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

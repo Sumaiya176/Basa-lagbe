@@ -1,5 +1,11 @@
 "use client";
-import { useCreateListingMutation } from "@/redux/features/listing/listingApi";
+
+import { BiEdit } from "react-icons/bi";
+import { useParams } from "next/navigation";
+import {
+  useUpdateListingMutation,
+  useGetSingleListingQuery,
+} from "@/redux/features/listing/listingApi";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -42,64 +48,36 @@ export type Inputs = {
   propertyImages: string[];
 };
 
-const keys: Array<keyof Inputs> = [
-  "propertyType",
-  "bedroom",
-  "bathroom",
-  "balcony",
-  "size",
-  "availability",
-  "description",
-  "street",
-  "city",
-  "district",
-  "area",
-  "rent",
-  "advance",
-  "noticePeriod",
-  "electricity",
-  "gas",
-  "water",
-  "rentNegotiable",
-  "internet",
-  "security",
-  "swimmingPool",
-  "furnished",
-  "parking",
-  "intercom",
-  "childrenPlayArea",
-  "lift",
-  "servantQuarter",
-  "waterHeater",
-  "generator",
-  "fitnessCenter",
-  "ac",
-  "ownerName",
-  "ownerEmail",
-  "phone",
-  "preferredContact",
-] as const;
+const notify = (text: string) => toast(text);
 
-const PostToLet = () => {
-  const [listing] = useCreateListingMutation();
-  const notify = (text: string) => toast(text);
+interface IListing extends Inputs {
+  _id: string;
+}
+
+const EditListing = ({ listing }: any) => {
+  const params = useParams<{ id: string }>();
+  const [updateListing] = useUpdateListingMutation();
+  const { data } = useGetSingleListingQuery(params?.id);
+
+  console.log(data);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const formData = new FormData();
-    keys.forEach((key) => {
-      formData.append(key, String(data[key]));
-    });
-    if (data.propertyImages && data.propertyImages.length > 0) {
-      Array.from(data.propertyImages).forEach((file: string) => {
-        formData.append("propertyImages", file);
-      });
-    }
+    //   const formData = new FormData();
+    //   keys.forEach((key) => {
+    //     formData.append(key, String(data[key]));
+    //   });
+    //   if (data.propertyImages && data.propertyImages.length > 0) {
+    //     Array.from(data.propertyImages).forEach((file: string) => {
+    //       formData.append("propertyImages", file);
+    //     });
+    //   }
     try {
-      const result = await listing(formData).unwrap();
+      const result = await updateListing(data).unwrap();
       console.log(result, result?.isSuccess);
       if (result?.isSuccess) {
         //console.log(result?.message);
@@ -109,15 +87,8 @@ const PostToLet = () => {
       notify(err?.data?.message);
     }
   };
-
   return (
-    <div className="mb-32">
-      <div className="flex flex-col items-center mt-5">
-        <p className="text-6xl font-extrabold">Post Your To-let Listing</p>
-        <p className="text-stone-400 mt-4">
-          Fill out the details below to list your property for rent on To-Let
-        </p>
-      </div>
+    <div>
       <div className="mt-5">
         <p className="text-2xl font-extrabold">Property details</p>
         <p className="text-gray-400 ">Tell us about your property for rent</p>
@@ -126,7 +97,7 @@ const PostToLet = () => {
             <div>
               <p className="font-medium">Property Type</p>
               <select
-                defaultValue="test"
+                defaultValue={listing.propertyType}
                 {...register("propertyType", { required: true })}
                 className="border border-stone-400 rounded mt-2 h-12 px-4 w-full"
               >
@@ -142,6 +113,7 @@ const PostToLet = () => {
             <div>
               <p className="font-medium">Bedrooms</p>
               <input
+                defaultValue={listing.bedroom}
                 type="number"
                 placeholder="e.g. 3"
                 className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
@@ -162,6 +134,7 @@ const PostToLet = () => {
             <div>
               <p className="font-medium">Bathrooms</p>
               <input
+                defaultValue={listing.bathroom}
                 placeholder="e.g. 2"
                 className="border border-stone-400 rounded px-4 mt-2 h-12 w-full"
                 type="number"
@@ -533,19 +506,19 @@ const PostToLet = () => {
             </div>
           </div>
 
-          <div className="mt-10">
-            <p className="text-2xl font-extrabold">Property Images</p>
-            <p className="text-gray-400 mt-2">
-              Upload high-quality photos of your property. Max 10 images.
-            </p>
-            <input
-              {...register("propertyImages")}
-              type="file"
-              multiple
-              accept="image/*"
-              className="file-input file-input-neutral"
-            />
-          </div>
+          {/* <div className="mt-10">
+              <p className="text-2xl font-extrabold">Property Images</p>
+              <p className="text-gray-400 mt-2">
+                Upload high-quality photos of your property. Max 10 images.
+              </p>
+              <input
+                {...register("propertyImages")}
+                type="file"
+                multiple
+                accept="image/*"
+                className="file-input file-input-neutral"
+              />
+            </div> */}
 
           <div className="mt-10">
             <p className="text-2xl font-extrabold">Contact Information</p>
@@ -644,10 +617,10 @@ const PostToLet = () => {
             />
           </div>
         </form>
-        <ToastContainer />
       </div>
+      <ToastContainer />
     </div>
   );
 };
 
-export default PostToLet;
+export default EditListing;

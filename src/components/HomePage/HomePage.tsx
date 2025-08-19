@@ -1,9 +1,11 @@
-import HeroSection from "./HeroSection";
+//import HeroSection from "./HeroSection";
+import FindToLet from "../FindToLet";
 
 const HomePage = () => {
   return (
     <div>
-      <HeroSection />
+      {/* <HeroSection /> */}
+      <FindToLet />
     </div>
   );
 };

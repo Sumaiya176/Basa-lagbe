@@ -1,7 +1,31 @@
-import Image from "next/image";
+"use client";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
+import { currentToken, logout } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { ToastContainer, toast } from "react-toastify";
 import Link from "next/link";
 
 const Navbar = () => {
+  const [logOut] = useLogoutMutation();
+  const token = useAppSelector(currentToken);
+  const dispatch = useAppDispatch();
+  const notify = (text: string) => toast(text);
+
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      const result = await logOut("").unwrap();
+      if (result?.isSuccess) {
+        notify(result?.message);
+      }
+      console.log(result);
+      console.log();
+      // router.push("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -25,13 +49,14 @@ const Navbar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow"
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow"
           >
             <li>
-              <Link href="/find-toLet">Find To-Let</Link>
+              <Link href="/user/post-toLet">Post To-Let</Link>
             </li>
+
             <li>
-              <Link href="/">Post To-Let</Link>
+              <Link href="/user/myListings">User Listings</Link>
             </li>
             <li>
               <Link href="/">About Us</Link>
@@ -40,21 +65,33 @@ const Navbar = () => {
               <Link href="/">Contact</Link>
             </li>
             <li>
-              <Link href="/login">Login</Link>
+              {token ? (
+                <button className="cursor-pointer" onClick={handleLogout}>
+                  {" "}
+                  LogOut
+                </button>
+              ) : (
+                <Link className="cursor-pointer" href="/login">
+                  Login
+                </Link>
+              )}
             </li>
           </ul>
         </div>
-        <a className="font-extrabold text-xl md:text-2xl cursor-pointer ">
+        <a
+          href="/"
+          className="font-extrabold text-xl md:text-2xl cursor-pointer "
+        >
           Basa Lagbe
         </a>
       </div>
       <div className="navbar-end gap-20 hidden  lg:flex">
         <ul className="menu menu-horizontal px-1 m-auto">
           <li>
-            <Link href="/find-toLet">Find To-Let</Link>
+            <Link href="/user/post-toLet">Post To-Let</Link>
           </li>
           <li>
-            <Link href="/post-toLet">Post To-Let</Link>
+            <Link href="/user/myListings">User Listings</Link>
           </li>
           <li>
             <Link href="/">About Us</Link>
@@ -63,10 +100,20 @@ const Navbar = () => {
             <Link href="/">Contact</Link>
           </li>
           <li>
-            <Link href="/login">Login</Link>
+            {token ? (
+              <button className="cursor-pointer" onClick={handleLogout}>
+                {" "}
+                LogOut
+              </button>
+            ) : (
+              <Link className="cursor-pointer" href="/login">
+                Login
+              </Link>
+            )}
           </li>
         </ul>
       </div>
+      <ToastContainer />
       {/* <div className="navbar-end">
         <a className="btn">Button</a>
       </div> */}
