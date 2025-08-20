@@ -60,7 +60,7 @@ const UserSidebar = () => {
 
                   className="p-3 font-bold text-xl "
                 >
-                  Basa Lagbe
+                  <Link href="/">Basa Lagbe</Link>
                 </div>
               </MenuItem>
             )}
@@ -109,7 +109,7 @@ const UserSidebar = () => {
             </MenuItem>
             <MenuItem
               icon={<GiNestedHearts className="text-3xl text-[tomato]" />}
-              component={<Link href="" />}
+              component={<Link href="/user/savedProperty" />}
             >
               {" "}
               Saved Listings

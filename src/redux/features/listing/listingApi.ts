@@ -60,6 +60,27 @@ const authApi = baseApi.injectEndpoints({
         };
       },
     }),
+
+    savedProperty: builder.mutation({
+      query: (id) => {
+        console.log("kkkkkk", id);
+        return {
+          url: "/listing/savedProperty",
+          method: "POST",
+          body: { id },
+        };
+      },
+    }),
+
+    getSavedProperty: builder.query({
+      query: () => {
+        console.log("bbbbj");
+        return {
+          url: "/listing/savedProperty",
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -70,4 +91,6 @@ export const {
   useGetSingleListingQuery,
   useDeleteListingMutation,
   useMyListingQuery,
+  useSavedPropertyMutation,
+  useGetSavedPropertyQuery,
 } = authApi;

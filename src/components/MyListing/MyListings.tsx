@@ -14,8 +14,10 @@ import EditModal from "./EditListing";
 import Link from "next/link";
 import EditListing from "./EditListing";
 
-interface IListing extends Inputs {
+export interface IListing extends Inputs {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const notify = (text: string) => toast(text);

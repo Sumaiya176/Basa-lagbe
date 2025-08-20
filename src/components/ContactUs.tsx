@@ -129,7 +129,7 @@ const ContactUs = () => {
               Feel free to reach out directly via email or phone.
             </p>
             <div className="mt-4 space-y-2">
-              <p>📧 Email: support@tolet.com</p>
+              <p>📧 Email: support@basalagbe.com</p>
               <p>📞 Phone: +880 1234-567890</p>
               <p>📍 Address: Dhaka, Bangladesh</p>
             </div>

@@ -1,16 +1,30 @@
 "use client";
 import ProtectedRoute from "@/app/(main)/ProtectedRoute";
-import { useGetAllListingQuery } from "@/redux/features/listing/listingApi";
+import {
+  useGetAllListingQuery,
+  useSavedPropertyMutation,
+} from "@/redux/features/listing/listingApi";
 import { districts } from "@/utils/district";
 //import { listings } from "@/utils/Listings";
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { IoBedOutline } from "react-icons/io5";
+import { PiBathtub } from "react-icons/pi";
+import { MdOutlineBalcony } from "react-icons/md";
+import { TbCurrencyTaka } from "react-icons/tb";
+import { GrElevator } from "react-icons/gr";
+import { TiHeart } from "react-icons/ti";
+import { ToastContainer, toast } from "react-toastify";
+
+const notify = (text: string) => toast(text);
 
 const FindToLet = () => {
   const { data } = useGetAllListingQuery(undefined);
+  const [savedProperty] = useSavedPropertyMutation();
   const [districtName, setDistrictName] = useState<string>("");
   const [propertyType, setPropertyType] = useState<string>("");
   const [city, setCity] = useState<string>("");
+  const [saveProperty, setSaveProperty] = useState<boolean>(false);
 
   const listings = useMemo(() => {
     if (!data?.data) return [];
@@ -31,14 +45,29 @@ const FindToLet = () => {
 
   console.log(listings);
 
+  const handleSaveProperty = async (id: string) => {
+    console.log(id);
+    try {
+      const result = await savedProperty(id).unwrap();
+      console.log(result, result?.isSuccess);
+      if (result?.isSuccess) {
+        setSaveProperty(true);
+        //console.log(result?.message);
+        notify(result?.message);
+      }
+    } catch (err: any) {
+      notify(err?.data?.message);
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-center gap-20 mb-10">
+    <div className="mb-20">
+      <div className="md:flex justify-center md:gap-20 mb-10">
         <div>
           <p className="text-base font-semibold mb-1">Type</p>
           <select
             onChange={(e) => setPropertyType(e.target.value)}
-            className="w-40 border text-sm border-stone-400"
+            className="w-full md:w-40 border text-sm border-stone-400 rounded"
           >
             <option value="family">Family</option>
             <option value="sublet">Sublet</option>
@@ -49,7 +78,7 @@ const FindToLet = () => {
           <p className="text-base font-semibold mb-1">District</p>
           <select
             onChange={(e) => setDistrictName(e.target.value)}
-            className="w-40 border text-sm border-stone-400"
+            className="w-full md:w-40 border text-sm border-stone-400 rounded"
           >
             {districts?.map((district: any) => (
               <option key={district.name} value={district.name}>
@@ -62,7 +91,7 @@ const FindToLet = () => {
           <p className="text-base font-semibold mb-1">City</p>
           <select
             onChange={(e) => setCity(e.target.value)}
-            className="w-40 border text-sm border-stone-400"
+            className="w-full md:w-40 border text-sm border-stone-400 rounded"
           >
             {districts
               ?.find((district: any) => district.name === districtName)
@@ -80,33 +109,75 @@ const FindToLet = () => {
           <div
             key={list?._id}
             className="min-w-[160px] max-w-full 1xs:w-[160px] md:min-w-[245px] md:max-w-[245px]
-              border flex-shrink-0"
+              border flex-shrink-0 rounded"
           >
             <Image
-              src={
-                list?.propertyImages
-                  ? list?.propertyImages[0]
-                  : "https://about.me/cdn-cgi/image/q=80,dpr=1,f=auto,fit=cover,w=1200,h=630,gravity=0.25x0.25/https://assets.about.me/background/users/t/o/l/tolet.board_1592250028_106.jpg"
-              }
-              className="object-contain w-full"
+              //src="/hero1.jpg"
+              src={list?.propertyImages[0] || "/tolet.jpg"}
+              className=" w-full  h-48"
               alt="to-let"
               height={170}
               width={120}
             />
-            <div className="overflow-y-auto max-h-[200px] ps-3">
-              <h3 className="text-gray-400 text-sm mb-2 break-words">
-                {list?.propertyType}
-              </h3>
-              <p className="text-gray-500 text-sm font-semibold flex justify-start items-end">
-                {list?.area}, {list?.city}, {list?.district}
+
+            <div className=" max-h-[200px] p-3">
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <h3 className="text-base break-words">
+                    {list?.propertyType}
+                  </h3>
+                  <p className="text-gray-500 text-sm font-light flex justify-start items-end">
+                    {list?.area}, {list?.city}, {list?.district}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <div className="text-center">
+                    <TiHeart
+                      onClick={() => handleSaveProperty(list?._id)}
+                      className={`text-2xl ${
+                        saveProperty ? "text-red-500" : "text-gray-500"
+                      } inline-block align-middle`}
+                    />
+                    <p className="text-[tomato] text-base font-semibold flex justify-start items-end">
+                      <TbCurrencyTaka className="text-2xl" />
+                      {list?.rent}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <hr />
+              <p className="text-gray-500 text-base">
+                Available from :{" "}
+                {new Date(list?.availability).toLocaleString("default", {
+                  month: "long",
+                })}
               </p>
-              <p className="text-gray-500 text-sm font-semibold flex justify-start items-end">
-                {list?.rent} BDT
-              </p>
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex gap-x-1">
+                  <IoBedOutline className="text-lg text-gray-500" />
+                  <p className="text-sm">{list?.bedroom}</p>
+                </div>
+                <div className="flex gap-x-1">
+                  <PiBathtub className="text-lg text-gray-500" />
+                  <p className="text-sm">{list?.bathroom}</p>
+                </div>
+                <div className="flex gap-x-1">
+                  <MdOutlineBalcony className="text-lg text-gray-500" />
+                  <p className="text-sm">{list?.balcony}</p>
+                </div>
+                <div className="flex gap-x-1">
+                  <p className="text-sm">
+                    {list?.lift ? (
+                      <GrElevator className="text-lg text-gray-500" />
+                    ) : null}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         ))}
       </div>
+      <ToastContainer />
     </div>
   );
 };
