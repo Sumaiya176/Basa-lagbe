@@ -1,8 +1,12 @@
 "use client";
 
-import { useGetSavedPropertyQuery } from "@/redux/features/listing/listingApi";
+import {
+  useGetSavedPropertyQuery,
+  useRemoveSavedPropertyMutation,
+} from "@/redux/features/listing/listingApi";
 import { useState } from "react";
 import { IListing } from "./MyListing/MyListings";
+import { ToastContainer, toast } from "react-toastify";
 
 const options = {
   year: "numeric",
@@ -13,8 +17,11 @@ const options = {
   timeZoneName: "short",
 };
 
+const notify = (text: string) => toast(text);
+
 const SavedProperty = () => {
   const { data } = useGetSavedPropertyQuery(undefined);
+  const [removeSavedProperty] = useRemoveSavedPropertyMutation();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5);
 
@@ -30,6 +37,18 @@ const SavedProperty = () => {
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
+    }
+  };
+
+  const handleRemoveProperty = async (id: string) => {
+    try {
+      const result = await removeSavedProperty(id).unwrap();
+      console.log(result);
+      if (result?.isSuccess) {
+        notify(result?.message);
+      }
+    } catch (err: any) {
+      notify(err?.data?.message);
     }
   };
 
@@ -66,8 +85,11 @@ const SavedProperty = () => {
                   <button className="bg-stone-500 py-3 px-5 text-white rounded">
                     View
                   </button>
-                  <button className="bg-red-500 py-3 px-5 text-white rounded">
-                    Delete
+                  <button
+                    onClick={() => handleRemoveProperty(listing._id)}
+                    className="bg-red-500 py-3 px-5 text-white rounded"
+                  >
+                    Remove
                   </button>
                 </td>
               </tr>
@@ -109,6 +131,7 @@ const SavedProperty = () => {
           Next
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 };

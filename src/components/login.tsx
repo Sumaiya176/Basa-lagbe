@@ -5,6 +5,7 @@ import { setUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { verifyToken } from "@/utils/verifyToken";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
@@ -50,12 +51,13 @@ const Login = () => {
         <p className="text-white text-3xl text-center my-3">Login</p>
         <form onSubmit={handleSubmit(onSubmit)} className="">
           <input
-            defaultValue="email"
+            placeholder="example@gmail.com"
             {...register("email")}
             className="border border-slate-400 px-3  md:w-72 h-14 py-2 rounded my-5"
           />
           <br />
           <input
+            placeholder="Password"
             className="border border-slate-400 w-full px-3 md:w-72 h-14 py-2 rounded"
             {...register("password", { required: true })}
           />
@@ -65,6 +67,7 @@ const Login = () => {
           <input
             className="bg-orange-500 w-full md:w-72 h-14 text-lg font-semibold tracking-wider cursor-pointer text-white my-10 px-3 py-2 rounded"
             type="submit"
+            value={"LogIn"}
           />
         </form>
 
@@ -133,6 +136,14 @@ const Login = () => {
             </svg>
           </button>
         </div>
+
+        <p className="block text-white w-full pt-4">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
+          Don't have any account?{" "}
+          <Link className="text-red-500" href="/register">
+            SignUp
+          </Link>{" "}
+        </p>
       </div>
     </div>
   );

@@ -46,10 +46,8 @@ const FindToLet = () => {
   console.log(listings);
 
   const handleSaveProperty = async (id: string) => {
-    console.log(id);
     try {
       const result = await savedProperty(id).unwrap();
-      console.log(result, result?.isSuccess);
       if (result?.isSuccess) {
         setSaveProperty(true);
         //console.log(result?.message);

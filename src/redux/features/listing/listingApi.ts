@@ -70,6 +70,7 @@ const authApi = baseApi.injectEndpoints({
           body: { id },
         };
       },
+      invalidatesTags: ["SavedProperty"],
     }),
 
     getSavedProperty: builder.query({
@@ -80,6 +81,18 @@ const authApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: ["SavedProperty"],
+    }),
+
+    removeSavedProperty: builder.mutation({
+      query: (id) => {
+        console.log("bbbbj", id);
+        return {
+          url: `/listing/savedProperty/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["SavedProperty"],
     }),
   }),
 });
@@ -93,4 +106,5 @@ export const {
   useMyListingQuery,
   useSavedPropertyMutation,
   useGetSavedPropertyQuery,
+  useRemoveSavedPropertyMutation,
 } = authApi;

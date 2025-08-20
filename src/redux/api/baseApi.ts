@@ -51,8 +51,10 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
   return result;
 };
+
 export const baseApi = createApi({
   reducerPath: "baseApi",
+  tagTypes: ["SavedProperty"],
   baseQuery: baseQueryWithRefreshToken,
   endpoints: () => ({}),
 });

@@ -2,6 +2,7 @@
 
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -38,20 +39,21 @@ const Register = () => {
     <div className="bg-hero bg-cover bg-center h-screen flex justify-center items-center">
       <div className="bg-black bg-opacity-60 z-10 p-16 border border-orange-500 rounded">
         <p className="text-white text-3xl text-center my-3">Sign Up</p>
-        <form onSubmit={handleSubmit(onSubmit)} className="">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input
-            defaultValue="Mr. Abc"
+            placeholder="Mr. Abc"
             {...register("userName", { required: true })}
             className="border border-slate-400 px-3  md:w-72 h-14 py-2 rounded my-5"
           />
           <br />
           <input
-            defaultValue="abx@gmail.com"
+            placeholder="abc@gmail.com"
             {...register("email", { required: true })}
             className="border border-slate-400 px-3  md:w-72 h-14 py-2 rounded my-5"
           />
           <br />
           <input
+            placeholder="Password"
             className="border border-slate-400 w-full px-3 md:w-72 h-14 py-2 rounded"
             {...register("password", { required: true })}
           />
@@ -61,6 +63,7 @@ const Register = () => {
           <input
             className="bg-orange-500 w-full cursor-pointer md:w-72 h-14 text-lg font-semibold tracking-wider text-white my-10 px-3 py-2 rounded"
             type="submit"
+            value={"SignIn"}
           />
         </form>
 
@@ -129,6 +132,13 @@ const Register = () => {
             </svg>
           </button>
         </div>
+        <p className="block text-white w-full pt-4">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
+          Already have an account?{" "}
+          <Link className="text-red-500" href="/login">
+            Login
+          </Link>{" "}
+        </p>
       </div>
     </div>
   );
