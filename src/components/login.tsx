@@ -47,8 +47,10 @@ const Login = () => {
   };
   return (
     <div className="bg-hero bg-cover bg-center h-screen flex justify-center items-center">
-      <div className="bg-black bg-opacity-60 z-10 p-16 border border-orange-500 rounded">
-        <p className="text-white text-3xl text-center my-3">Login</p>
+      <div className="bg-black bg-opacity-60 z-10 p-16 rounded">
+        <p className="text-white text-3xl font-extrabold text-center my-3">
+          Login
+        </p>
         <form onSubmit={handleSubmit(onSubmit)} className="">
           <input
             placeholder="example@gmail.com"

@@ -2,6 +2,14 @@
 import { useCreateListingMutation } from "@/redux/features/listing/listingApi";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
+import Map from "./Map/Map";
+import MapWrapper from "./Map/MapWrapper";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+
+const LocationPicker = dynamic(() => import("./Map/LocationPicker"), {
+  ssr: false,
+});
 
 export type Inputs = {
   propertyType: "family" | "sublet" | "office";
@@ -10,6 +18,7 @@ export type Inputs = {
   balcony: number;
   size?: number;
   availability: string;
+  floor: string;
   description?: string;
   street?: string;
   city: string;
@@ -49,6 +58,7 @@ const keys: Array<keyof Inputs> = [
   "balcony",
   "size",
   "availability",
+  "floor",
   "description",
   "street",
   "city",
@@ -82,6 +92,9 @@ const keys: Array<keyof Inputs> = [
 
 const PostToLet = () => {
   const [listing] = useCreateListingMutation();
+  const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
   const notify = (text: string) => toast(text);
   const {
     register,
@@ -99,7 +112,16 @@ const PostToLet = () => {
       });
     }
     try {
-      const result = await listing(formData).unwrap();
+      const body = {
+        ...formData,
+        location: {
+          address: data.area,
+          latitude: latLng?.lat,
+          longitude: latLng?.lng,
+        },
+      };
+      console.log("hello", formData, body, latLng);
+      const result = await listing(body).unwrap();
       console.log(result, result?.isSuccess);
       if (result?.isSuccess) {
         //console.log(result?.message);
@@ -209,6 +231,18 @@ const PostToLet = () => {
               )}
             </div>
             <div>
+              <p className="font-medium">Floor </p>
+              <input
+                placeholder="e.g. 2nd"
+                type="text"
+                className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
+                {...register("floor", { valueAsNumber: true })}
+              />
+              {errors.size && (
+                <span className="text-red-600">Floor is required</span>
+              )}
+            </div>
+            <div>
               <p className="font-medium">Availability</p>
               <input
                 className="border border-stone-400 rounded px-4 mt-2 h-12 w-full"
@@ -242,9 +276,9 @@ const PostToLet = () => {
               className="border border-stone-400 rounded p-4 mt-2 h-32 w-full"
               {...register("description")}
             />
-            {errors.description && (
+            {/* {errors.description && (
               <span className="text-red-600">Description is required</span>
-            )}
+            )} */}
           </div>
 
           <div className="mt-14">
@@ -305,6 +339,9 @@ const PostToLet = () => {
                 <span className="text-red-600">{errors.area.message}</span>
               )}
             </div>
+
+            {/* Map Picker */}
+            <LocationPicker onLocationSelect={(coords) => setLatLng(coords)} />
           </div>
 
           <div className="mt-14">
@@ -605,7 +642,7 @@ const PostToLet = () => {
                   {...register("preferredContact", { required: true })}
                   className="border border-stone-400 rounded mt-2 h-12 px-4 w-full"
                 /> */}
-                <div className="flex gap-10 mt-3">
+                <div className="lg:flex gap-10 space-y-2 mt-3">
                   <div className="flex gap-3">
                     <input
                       type="radio"
@@ -644,6 +681,7 @@ const PostToLet = () => {
             />
           </div>
         </form>
+
         <ToastContainer />
       </div>
     </div>

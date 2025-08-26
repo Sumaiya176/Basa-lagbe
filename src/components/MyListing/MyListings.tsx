@@ -13,12 +13,7 @@ import { ToastContainer, toast } from "react-toastify";
 import EditModal from "./EditListing";
 import Link from "next/link";
 import EditListing from "./EditListing";
-
-export interface IListing extends Inputs {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { IListing } from "@/interfaces/interfaces";
 
 const notify = (text: string) => toast(text);
 

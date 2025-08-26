@@ -11,7 +11,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <div className="mx-8 md:mx-16 my-7">
+      <div className="1xs:mx-2 2xs:mx-2 3xs:mx-2 sm:mx-4 md:mx-6 lg:mx-16 my-7">
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Footer />

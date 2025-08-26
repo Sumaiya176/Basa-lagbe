@@ -9,6 +9,10 @@ const nextConfig = {
         // port: '',
         // pathname: 'arifscloud/image/upload/**',
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
     ],
   },
 };

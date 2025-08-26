@@ -50,10 +50,6 @@ export type Inputs = {
 
 const notify = (text: string) => toast(text);
 
-interface IListing extends Inputs {
-  _id: string;
-}
-
 const EditListing = ({ listing }: any) => {
   const params = useParams<{ id: string }>();
   const [updateListing] = useUpdateListingMutation();
@@ -80,7 +76,6 @@ const EditListing = ({ listing }: any) => {
       const result = await updateListing(data).unwrap();
       console.log(result, result?.isSuccess);
       if (result?.isSuccess) {
-        //console.log(result?.message);
         notify(result?.message);
       }
     } catch (err: any) {

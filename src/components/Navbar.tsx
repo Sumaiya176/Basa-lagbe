@@ -80,7 +80,7 @@ const Navbar = () => {
         </div>
         <a
           href="/"
-          className="font-extrabold text-xl md:text-2xl cursor-pointer "
+          className="font-extrabold 3xs:text-xs 2xs:text-sm sm:text-xl md:text-2xl cursor-pointer "
         >
           Basa Lagbe
         </a>

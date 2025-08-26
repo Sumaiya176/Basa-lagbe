@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 
 const Home = async () => {
   const session = await getServerSession(authOptions);
-  console.log(session);
+  //console.log(session);
   return (
     <main>
       <HomePage />

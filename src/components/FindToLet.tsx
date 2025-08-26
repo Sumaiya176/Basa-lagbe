@@ -15,6 +15,7 @@ import { TbCurrencyTaka } from "react-icons/tb";
 import { GrElevator } from "react-icons/gr";
 import { TiHeart } from "react-icons/ti";
 import { ToastContainer, toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const notify = (text: string) => toast(text);
 
@@ -24,26 +25,37 @@ const FindToLet = () => {
   const [districtName, setDistrictName] = useState<string>("");
   const [propertyType, setPropertyType] = useState<string>("");
   const [city, setCity] = useState<string>("");
+  const [minPrice, setMinPrice] = useState<number>();
+  const [maxPrice, setMaxPrice] = useState<number>();
   const [saveProperty, setSaveProperty] = useState<boolean>(false);
+  const router = useRouter();
 
   const listings = useMemo(() => {
     if (!data?.data) return [];
 
     return data.data.filter((listing: any) => {
       const matchesDistrict =
-        !districtName || listing.districtName === districtName;
+        !districtName || listing.district === districtName;
 
       const matchesType =
         !propertyType || listing.propertyType === propertyType;
 
       const matchesCity = !city || listing.city === city;
+      const matchesMinPrice = !minPrice || listing.rent >= minPrice;
+      const matchesMaxPrice = !maxPrice || listing.rent <= maxPrice;
 
       // ✅ All active filters must pass
-      return matchesDistrict && matchesType && matchesCity;
+      return (
+        matchesDistrict &&
+        matchesType &&
+        matchesCity &&
+        matchesMinPrice &&
+        matchesMaxPrice
+      );
     });
-  }, [data, districtName, propertyType, city]);
+  }, [data, districtName, propertyType, city, minPrice, maxPrice]);
 
-  console.log(listings);
+  //console.log(listings);
 
   const handleSaveProperty = async (id: string) => {
     try {
@@ -58,14 +70,24 @@ const FindToLet = () => {
     }
   };
 
+  const handleCleanFilters = () => {
+    setDistrictName(""),
+      setPropertyType(""),
+      setCity(""),
+      setMinPrice(undefined),
+      setMaxPrice(undefined);
+  };
+
+  const handleView = (id: string) => {};
+
   return (
-    <div className="mb-20">
-      <div className="md:flex justify-center md:gap-20 mb-10">
+    <div className="mb-20 mt-5">
+      <div className="grid 3xs:grid-cols-1 2xs:grid-cols-2 2xs:gap-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 md:gap-6 mb-10 lg:grid-cols-4 lg:gap-5 xl:grid-cols-5 xl:gap-5 2xl:grid-cols-6 2xl:gap-5">
         <div>
-          <p className="text-base font-semibold mb-1">Type</p>
+          <p className="text-stone-500 mb-1">Type</p>
           <select
             onChange={(e) => setPropertyType(e.target.value)}
-            className="w-full md:w-40 border text-sm border-stone-400 rounded"
+            className="w-full  border text-sm border-stone-400 rounded"
           >
             <option value="family">Family</option>
             <option value="sublet">Sublet</option>
@@ -73,10 +95,10 @@ const FindToLet = () => {
           </select>
         </div>
         <div>
-          <p className="text-base font-semibold mb-1">District</p>
+          <p className="text-stone-500 mb-1">District</p>
           <select
             onChange={(e) => setDistrictName(e.target.value)}
-            className="w-full md:w-40 border text-sm border-stone-400 rounded"
+            className="w-full  border text-sm border-stone-400 rounded"
           >
             {districts?.map((district: any) => (
               <option key={district.name} value={district.name}>
@@ -86,10 +108,10 @@ const FindToLet = () => {
           </select>
         </div>
         <div>
-          <p className="text-base font-semibold mb-1">City</p>
+          <p className="text-stone-500 mb-1">City</p>
           <select
             onChange={(e) => setCity(e.target.value)}
-            className="w-full md:w-40 border text-sm border-stone-400 rounded"
+            className="w-full  border text-sm border-stone-400 rounded"
           >
             {districts
               ?.find((district: any) => district.name === districtName)
@@ -100,31 +122,66 @@ const FindToLet = () => {
               ))}
           </select>
         </div>
+
+        <div>
+          <p className="text-stone-500 mb-1">Min Price</p>
+          <input
+            onChange={(e) => setMinPrice(Number(e.target.value))}
+            type="number"
+            className="w-full border text-sm border-stone-400 rounded"
+            name=""
+            id=""
+          />
+        </div>
+
+        <div>
+          <p className="text-stone-500 mb-1">Max Price</p>
+          <input
+            type="number"
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            className="w-full  border text-sm border-stone-400 rounded"
+            name=""
+            id=""
+          />
+        </div>
+
+        <div className="2xs:mt-7">
+          <button
+            onClick={() => handleCleanFilters()}
+            className="bg-[tomato] text-white rounded px-4 py-2 "
+          >
+            Clean filters
+          </button>
+        </div>
       </div>
 
-      <div className="grid 1xs:grid-cols-2 2xs:grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-y-6">
+      <div className="grid 3xs:grid-cols-1 3xs:gap-y-2 2xs:grid-cols-2 2xs:gap-y-1 2xs:gap-x-1 1xs:gap-3 sm:grid-cols-3 md:grid-cols-3 md:gap-3 1md:grid-cols-4 xl:grid-cols-5 xl:gap-3 2xl:grid-cols-6 2xl:gap-3">
         {listings?.map((list: any) => (
           <div
             key={list?._id}
-            className="min-w-[160px] max-w-full 1xs:w-[160px] md:min-w-[245px] md:max-w-[245px]
-              border flex-shrink-0 rounded"
+            className="min-w-[160px] max-w-full 3xs:max-w-[180] 2xs:max-w-[190px] 1xs:max-w-[270px] md:max-w-[270px]
+              border border-red-500 flex-shrink-0 rounded"
           >
             <Image
               //src="/hero1.jpg"
               src={list?.propertyImages[0] || "/tolet.jpg"}
-              className=" w-full  h-48"
+              className="w-full h-48 cursor-pointer"
               alt="to-let"
               height={170}
               width={120}
+              onClick={() => {
+                handleView(list?._id);
+                router.push(`/find-toLet/${list?._id}`);
+              }}
             />
 
-            <div className=" max-h-[200px] p-3">
+            <div className="max-h-[200px] p-3">
               <div className="flex justify-between items-center mb-3">
                 <div>
-                  <h3 className="text-base break-words">
+                  <h3 className="text-base break-words 2xs:text-sm">
                     {list?.propertyType}
                   </h3>
-                  <p className="text-gray-500 text-sm font-light flex justify-start items-end">
+                  <p className="text-gray-500 2xs:text-xs text-sm font-light flex justify-start items-end">
                     {list?.area}, {list?.city}, {list?.district}
                   </p>
                 </div>
@@ -136,7 +193,7 @@ const FindToLet = () => {
                         saveProperty ? "text-red-500" : "text-gray-500"
                       } inline-block align-middle`}
                     />
-                    <p className="text-[tomato] text-base font-semibold flex justify-start items-end">
+                    <p className="text-[tomato]  2xs:text-sm text-base font-semibold flex justify-start items-end">
                       <TbCurrencyTaka className="text-2xl" />
                       {list?.rent}
                     </p>
@@ -144,7 +201,7 @@ const FindToLet = () => {
                 </div>
               </div>
               <hr />
-              <p className="text-gray-500 text-base">
+              <p className="text-gray-500 2xs:text-xs text-base">
                 Available from :{" "}
                 {new Date(list?.availability).toLocaleString("default", {
                   month: "long",
@@ -153,15 +210,15 @@ const FindToLet = () => {
               <div className="flex items-center justify-between mt-4">
                 <div className="flex gap-x-1">
                   <IoBedOutline className="text-lg text-gray-500" />
-                  <p className="text-sm">{list?.bedroom}</p>
+                  <p className="text-sm  1xs:text-xs">{list?.bedroom}</p>
                 </div>
                 <div className="flex gap-x-1">
                   <PiBathtub className="text-lg text-gray-500" />
-                  <p className="text-sm">{list?.bathroom}</p>
+                  <p className="text-sm  1xs:text-xs">{list?.bathroom}</p>
                 </div>
                 <div className="flex gap-x-1">
                   <MdOutlineBalcony className="text-lg text-gray-500" />
-                  <p className="text-sm">{list?.balcony}</p>
+                  <p className="text-sm  1xs:text-xs">{list?.balcony}</p>
                 </div>
                 <div className="flex gap-x-1">
                   <p className="text-sm">

@@ -11,9 +11,11 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        "3xs": "375px",
-        "2xs": "320px",
+        "3xs": "320px",
+        "2xs": "385px",
         "1xs": "425px",
+        "2md": "850px",
+        "1md": "950px",
         "3xl": "1920px",
       },
       backgroundImage: {

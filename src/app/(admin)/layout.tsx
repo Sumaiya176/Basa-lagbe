@@ -8,13 +8,14 @@ import { CgPlayListAdd } from "react-icons/cg";
 import { TbHomeCheck } from "react-icons/tb";
 import { GiNestedHearts } from "react-icons/gi";
 import { GoEye } from "react-icons/go";
+import ProtectedRoute from "../(main)/ProtectedRoute";
 
 const sidebarData = [
   {
     id: 1,
     icon: <RiHome4Line className="text-2xl text-[tomato]" />,
     title: "Dashboard",
-    url: "/user/dashboard",
+    url: "/admin/dashboard",
   },
   {
     id: 2,
@@ -24,28 +25,28 @@ const sidebarData = [
   },
   {
     id: 3,
-    icon: <CgPlayListAdd className="text-2xl text-[tomato]" />,
-    title: "My Listings",
-    url: "/user/myListings",
+    icon: <TbHomeCheck className="text-2xl text-[tomato]" />,
+    title: "All Users",
+    url: "/admin/allUsers",
   },
   {
     id: 4,
-    icon: <TbHomeCheck className="text-2xl text-[tomato]" />,
-    title: "Add Property",
-    url: "/user/post-toLet",
+    icon: <CgPlayListAdd className="text-2xl text-[tomato]" />,
+    title: "All Listings",
+    url: "/admin/allListings",
   },
-  {
-    id: 5,
-    icon: <GiNestedHearts className="text-2xl text-[tomato]" />,
-    title: "Saved Listings",
-    url: "/user/savedProperty",
-  },
-  {
-    id: 6,
-    icon: <GoEye className="text-2xl text-[tomato]" />,
-    title: "Recently Viewed",
-    url: "",
-  },
+  // {
+  //   id: 5,
+  //   icon: <GiNestedHearts className="text-2xl text-[tomato]" />,
+  //   title: "Saved Listings",
+  //   url: "/user/savedProperty",
+  // },
+  // {
+  //   id: 6,
+  //   icon: <GoEye className="text-2xl text-[tomato]" />,
+  //   title: "Recently Viewed",
+  //   url: "",
+  // },
 ];
 export default function MainLayout({
   children,
@@ -55,7 +56,9 @@ export default function MainLayout({
   return (
     <div className="flex min-h-screen">
       <Sidebar sidebarData={sidebarData} />
-      <main className="flex-1 p-4">{children}</main>
+      <ProtectedRoute>
+        <main className="flex-1 p-4">{children}</main>
+      </ProtectedRoute>
     </div>
   );
 }
