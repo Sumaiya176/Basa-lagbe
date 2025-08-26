@@ -1,11 +1,12 @@
 "use client";
 
+import { IListing } from "@/interfaces/interfaces";
 import {
   useGetSavedPropertyQuery,
   useRemoveSavedPropertyMutation,
 } from "@/redux/features/listing/listingApi";
 import { useState } from "react";
-import { IListing } from "./MyListing/MyListings";
+
 import { ToastContainer, toast } from "react-toastify";
 
 const options = {
