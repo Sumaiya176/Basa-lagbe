@@ -4,7 +4,7 @@ import {
   useGetAllListingQuery,
   useSavedPropertyMutation,
 } from "@/redux/features/listing/listingApi";
-import { districts } from "@/utils/district";
+import { bangladeshAdministrativeAreas } from "@/utils/district";
 //import { listings } from "@/utils/Listings";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -22,9 +22,10 @@ const notify = (text: string) => toast(text);
 const FindToLet = () => {
   const { data } = useGetAllListingQuery(undefined);
   const [savedProperty] = useSavedPropertyMutation();
+  const [divisionName, setDivisionName] = useState<string>("");
   const [districtName, setDistrictName] = useState<string>("");
   const [propertyType, setPropertyType] = useState<string>("");
-  const [city, setCity] = useState<string>("");
+  const [thana, setThana] = useState<string>("");
   const [minPrice, setMinPrice] = useState<number>();
   const [maxPrice, setMaxPrice] = useState<number>();
   const [saveProperty, setSaveProperty] = useState<boolean>(false);
@@ -34,26 +35,37 @@ const FindToLet = () => {
     if (!data?.data) return [];
 
     return data.data.filter((listing: any) => {
+      const matchesDivision =
+        !divisionName || listing.division === divisionName;
       const matchesDistrict =
         !districtName || listing.district === districtName;
 
       const matchesType =
         !propertyType || listing.propertyType === propertyType;
 
-      const matchesCity = !city || listing.city === city;
+      const matchesThana = !thana || listing.city === thana;
       const matchesMinPrice = !minPrice || listing.rent >= minPrice;
       const matchesMaxPrice = !maxPrice || listing.rent <= maxPrice;
 
       // ✅ All active filters must pass
       return (
+        matchesDivision &&
         matchesDistrict &&
         matchesType &&
-        matchesCity &&
+        matchesThana &&
         matchesMinPrice &&
         matchesMaxPrice
       );
     });
-  }, [data, districtName, propertyType, city, minPrice, maxPrice]);
+  }, [
+    data?.data,
+    divisionName,
+    districtName,
+    propertyType,
+    thana,
+    minPrice,
+    maxPrice,
+  ]);
 
   //console.log(listings);
 
@@ -73,7 +85,7 @@ const FindToLet = () => {
   const handleCleanFilters = () => {
     setDistrictName(""),
       setPropertyType(""),
-      setCity(""),
+      setThana(""),
       setMinPrice(undefined),
       setMaxPrice(undefined);
   };
@@ -95,29 +107,47 @@ const FindToLet = () => {
           </select>
         </div>
         <div>
-          <p className="text-stone-500 mb-1">District</p>
+          <p className="text-stone-500 mb-1">Division</p>
           <select
-            onChange={(e) => setDistrictName(e.target.value)}
+            onChange={(e) => setDivisionName(e.target.value)}
             className="w-full  border text-sm border-stone-400 rounded"
           >
-            {districts?.map((district: any) => (
-              <option key={district.name} value={district.name}>
-                {district.name}
+            {bangladeshAdministrativeAreas?.map((division: any) => (
+              <option key={division.division} value={division.division}>
+                {division.division}
               </option>
             ))}
           </select>
         </div>
         <div>
-          <p className="text-stone-500 mb-1">City</p>
+          <p className="text-stone-500 mb-1">District</p>
           <select
-            onChange={(e) => setCity(e.target.value)}
+            onChange={(e) => setDistrictName(e.target.value)}
             className="w-full  border text-sm border-stone-400 rounded"
           >
-            {districts
-              ?.find((district: any) => district.name === districtName)
-              ?.cities.map((city: any) => (
-                <option key={city.name} value={city.name}>
-                  {city.name}
+            {bangladeshAdministrativeAreas
+              ?.find((division: any) => division.division === divisionName)
+              ?.districts?.map((district: any) => (
+                <option key={district.district} value={district.district}>
+                  {district.district}
+                </option>
+              ))}
+          </select>
+        </div>
+        <div>
+          <p className="text-stone-500 mb-1">Thana</p>
+          <select
+            onChange={(e) => setThana(e.target.value)}
+            className="w-full  border text-sm border-stone-400 rounded"
+          >
+            {bangladeshAdministrativeAreas
+              ?.find((division: any) => division.division === divisionName)
+              ?.districts?.find(
+                (district: any) => district.district === districtName
+              )
+              ?.thanas?.map((thana: any) => (
+                <option key={thana.thana} value={thana.thana}>
+                  {thana.thana}
                 </option>
               ))}
           </select>
@@ -182,7 +212,7 @@ const FindToLet = () => {
                     {list?.propertyType}
                   </h3>
                   <p className="text-gray-500 2xs:text-xs text-sm font-light flex justify-start items-end">
-                    {list?.area}, {list?.city}, {list?.district}
+                    {list?.thana}, {list?.district}
                   </p>
                 </div>
                 <div className="flex items-center">

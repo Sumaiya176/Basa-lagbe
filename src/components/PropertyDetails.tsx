@@ -21,33 +21,31 @@ import {
   Landmark,
 } from "lucide-react";
 import Image from "next/image";
+import LocationMap from "./Map/LocationMap";
 
 const PropertyDetails = () => {
   const params = useParams<{ id: string }>();
 
   const { data } = useGetSingleListingQuery(params?.id);
-  //console.log(data);
+  console.log(data);
   return (
-    <div className="">
-      {data?.data?.propertyImages.length > 1 ? (
-        <ParallaxCarousel
-          images={[
-            "https://picsum.photos/id/1018/1000/600/",
-            "https://picsum.photos/id/1015/1000/600/",
-            "https://picsum.photos/id/1019/1000/600/",
-            "https://picsum.photos/id/1019/1000/600/",
-            "https://picsum.photos/id/1019/1000/600/",
-            "https://picsum.photos/id/1019/1000/600/",
-            "https://picsum.photos/id/1019/1000/600/",
-          ]}
-        />
+    <div>
+      {data?.data?.propertyImages.length === 0 ? (
+        <p className="text-red-500 text-2xl text-center my-10">
+          Sorry No Image Provided !
+        </p>
+      ) : data?.data?.propertyImages.length > 1 ? (
+        <ParallaxCarousel images={data?.data?.propertyImages} />
       ) : (
-        <Image
-          src={data?.data?.propertyImages[0]}
-          alt="tolet"
-          height={400}
-          width={400}
-        />
+        <div className="flex justify-center items-center my-5">
+          <Image
+            src={data?.data?.propertyImages[0]}
+            alt="tolet"
+            height={500}
+            width={600}
+            className="max-w-96 max-h-60 w-full h-full"
+          />
+        </div>
       )}
       {/* <div className="mt-10 border rounded px-10 py-7">
         <p className="text-lg mb-3 font-semibold">Basic Information</p>
@@ -120,7 +118,7 @@ const PropertyDetails = () => {
           </div>
           <div className="flex items-center gap-2">
             <Landmark className="w-5 h-5 text-blue-500" />
-            <span>Floor 2</span>
+            <span>Floor {data?.data?.floor}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-blue-500" />
@@ -136,12 +134,40 @@ const PropertyDetails = () => {
         </div>
 
         {/* Location Info */}
-        <div className="flex items-start gap-3 border-t pt-4">
-          <MapPin className="w-6 h-6 text-blue-500 mt-1" />
-          <div>
-            <h2 className="font-semibold text-lg text-gray-900">Location</h2>
-            <p className="text-gray-700">{data?.data?.location}</p>
+        <div className="gap-3 border-t pt-4">
+          <div className="flex gap-3">
+            <MapPin className="w-6 h-6 text-blue-500 mt-1" />
+            <h2 className="mb-3 text-2xl font-semibold text-gray-900">
+              Location
+            </h2>
           </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="lg:flex gap-2 items-center text-stone-500">
+              <p className="font-semibold">Division </p>
+              <p>{data?.data?.district}</p>
+            </div>
+            <div className="lg:flex gap-2 items-center text-stone-500">
+              <p className="font-semibold">District</p>
+              <p>{data?.data?.district}</p>
+            </div>
+            <div className="lg:flex gap-2 items-center text-stone-500">
+              <p className="font-semibold">Thana</p>
+              <p>{data?.data?.thana}</p>
+            </div>
+            <div className="lg:flex gap-2 items-center text-stone-500">
+              <p className="font-semibold">Address</p>
+              <p>{data?.data?.address}</p>
+            </div>
+          </div>
+
+          {data?.data?.latitude && data?.data?.longitude ? (
+            <LocationMap
+              latitude={data?.data?.latitude}
+              longitude={data?.data?.longitude}
+              address={data?.data?.address}
+            />
+          ) : null}
         </div>
       </div>
     </div>

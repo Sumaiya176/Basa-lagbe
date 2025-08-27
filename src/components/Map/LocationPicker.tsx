@@ -1,5 +1,6 @@
 "use client";
 
+import "@/utils/leaflet-icon-fix";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { useState } from "react";
 

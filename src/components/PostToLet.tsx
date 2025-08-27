@@ -2,10 +2,9 @@
 import { useCreateListingMutation } from "@/redux/features/listing/listingApi";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
-import Map from "./Map/Map";
-import MapWrapper from "./Map/MapWrapper";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { bangladeshAdministrativeAreas } from "@/utils/district";
 
 const LocationPicker = dynamic(() => import("./Map/LocationPicker"), {
   ssr: false,
@@ -20,10 +19,10 @@ export type Inputs = {
   availability: string;
   floor: string;
   description?: string;
-  street?: string;
-  city: string;
-  district: string;
-  area: string;
+  address: string;
+  // thana: string;
+  // district: string;
+  // division: string;
   rent: number;
   advance: number;
   noticePeriod: number;
@@ -60,10 +59,7 @@ const keys: Array<keyof Inputs> = [
   "availability",
   "floor",
   "description",
-  "street",
-  "city",
-  "district",
-  "area",
+  "address",
   "rent",
   "advance",
   "noticePeriod",
@@ -95,6 +91,9 @@ const PostToLet = () => {
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
     null
   );
+  const [divisionName, setDivisionName] = useState<string>("");
+  const [districtName, setDistrictName] = useState<string>("");
+  const [thana, setThana] = useState<string>("");
   const notify = (text: string) => toast(text);
   const {
     register,
@@ -102,6 +101,7 @@ const PostToLet = () => {
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log(data);
     const formData = new FormData();
     keys.forEach((key) => {
       formData.append(key, String(data[key]));
@@ -112,16 +112,13 @@ const PostToLet = () => {
       });
     }
     try {
-      const body = {
-        ...formData,
-        location: {
-          address: data.area,
-          latitude: latLng?.lat,
-          longitude: latLng?.lng,
-        },
-      };
-      console.log("hello", formData, body, latLng);
-      const result = await listing(body).unwrap();
+      formData.append("division", divisionName);
+      formData.append("district", districtName);
+      formData.append("thana", thana);
+      formData.append("latitude", String(latLng?.lat ?? ""));
+      formData.append("longitude", String(latLng?.lng ?? ""));
+
+      const result = await listing(formData).unwrap();
       console.log(result, result?.isSuccess);
       if (result?.isSuccess) {
         //console.log(result?.message);
@@ -135,13 +132,15 @@ const PostToLet = () => {
   return (
     <div className="mb-32">
       <div className="flex flex-col items-center mt-5">
-        <p className="text-6xl font-extrabold">Post Your To-let Listing</p>
+        <p className="text-3xl lg:text-6xl font-extrabold">
+          Post Your To-let Listing
+        </p>
         <p className="text-stone-400 mt-4">
           Fill out the details below to list your property for rent on To-Let
         </p>
       </div>
       <div className="mt-5">
-        <p className="text-2xl font-extrabold">Property details</p>
+        <p className="text-xl lg:text-2xl font-extrabold">Property details</p>
         <p className="text-gray-400 ">Tell us about your property for rent</p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="md:grid md:grid-cols-3 md:gap-10 mt-6">
@@ -152,6 +151,7 @@ const PostToLet = () => {
                 {...register("propertyType", { required: true })}
                 className="border border-stone-400 rounded mt-2 h-12 px-4 w-full"
               >
+                <option value="">Select type</option>
                 <option value="family">Family</option>
                 <option value="sublet">Sublet</option>
                 <option value="office">Office</option>
@@ -282,52 +282,82 @@ const PostToLet = () => {
           </div>
 
           <div className="mt-14">
-            <p className="text-2xl font-extrabold">Location Details</p>
+            <p className="text-xl lg:text-2xl font-extrabold">
+              Location Details
+            </p>
             <p className="text-gray-400 ">Where is your property Location ?</p>
             <div className="md:grid md:grid-cols-3 md:gap-10 mt-6">
               <div>
-                <p className="font-medium">Street</p>
+                <p className="font-medium">Division</p>
+                <select
+                  onChange={(e) => setDivisionName(e.target.value)}
+                  className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
+                  required
+                >
+                  <option value="">Select Division</option>
+                  {bangladeshAdministrativeAreas?.map((division: any) => (
+                    <option key={division.division} value={division.division}>
+                      {division.division}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <p className="font-medium">District</p>
+                <select
+                  onChange={(e) => setDistrictName(e.target.value)}
+                  className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
+                  required
+                >
+                  <option value="">Select Division</option>
+                  {bangladeshAdministrativeAreas
+                    ?.find(
+                      (division: any) => division.division === divisionName
+                    )
+                    ?.districts?.map((district: any) => (
+                      <option key={district.district} value={district.district}>
+                        {district.district}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div>
+                <p className="font-medium">Thana</p>
+                <select
+                  onChange={(e) => setThana(e.target.value)}
+                  className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
+                  required
+                >
+                  <option value="">Select Division</option>
+                  {bangladeshAdministrativeAreas
+                    ?.find(
+                      (division: any) => division.division === divisionName
+                    )
+                    ?.districts?.find(
+                      (district: any) => district.district === districtName
+                    )
+                    ?.thanas?.map((thana: any) => (
+                      <option key={thana.thana} value={thana.thana}>
+                        {thana.thana}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div>
+                <p className="font-medium">Address</p>
                 <input
                   placeholder="e.g. House 12, Road 5"
                   type="text"
                   className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
-                  {...register("street")}
+                  {...register("address")}
                 />
-                {errors.street && (
-                  <span className="text-red-600">Street is required</span>
-                )}
-              </div>
-
-              <div>
-                <p className="font-medium">City </p>
-                <input
-                  placeholder="e.g. Dhaka"
-                  type="text"
-                  className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
-                  {...register("city", { required: "City is required" })}
-                />
-                {errors.city && (
-                  <span className="text-red-600">{errors.city.message}</span>
-                )}
-              </div>
-              <div>
-                <p className="font-medium">District</p>
-                <input
-                  className="border border-stone-400 rounded px-4 mt-2 h-12 w-full"
-                  type="text"
-                  {...register("district", {
-                    required: "District is required",
-                  })}
-                />
-                {errors.district && (
-                  <span className="text-red-600">
-                    {errors.district.message}
-                  </span>
+                {errors.address && (
+                  <span className="text-red-600">Address is required</span>
                 )}
               </div>
             </div>
 
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <p className="font-medium">Area / Locality </p>
               <input
                 placeholder="e.g. Gulshan 1"
@@ -338,14 +368,20 @@ const PostToLet = () => {
               {errors.area && (
                 <span className="text-red-600">{errors.area.message}</span>
               )}
-            </div>
+            </div> */}
 
             {/* Map Picker */}
-            <LocationPicker onLocationSelect={(coords) => setLatLng(coords)} />
+            <div className="mt-7">
+              <LocationPicker
+                onLocationSelect={(coords) => setLatLng(coords)}
+              />
+            </div>
           </div>
 
           <div className="mt-14">
-            <p className="text-2xl font-extrabold">Rental Specifies</p>
+            <p className="text-xl lg:text-2xl font-extrabold">
+              Rental Specifies
+            </p>
             <p className="text-gray-400 ">
               Set the terms and prices for your rental.
             </p>
@@ -458,7 +494,7 @@ const PostToLet = () => {
           </div>
 
           <div className="mt-10">
-            <p className="text-2xl font-extrabold">Amenities</p>
+            <p className="text-xl lg:text-2xl font-extrabold">Amenities</p>
             <p className="text-gray-400 mt-2">
               Select the amenities available with your property.
             </p>
@@ -571,7 +607,9 @@ const PostToLet = () => {
           </div>
 
           <div className="mt-10">
-            <p className="text-2xl font-extrabold">Property Images</p>
+            <p className="text-xl lg:text-2xl font-extrabold">
+              Property Images
+            </p>
             <p className="text-gray-400 mt-2">
               Upload high-quality photos of your property. Max 10 images.
             </p>
@@ -585,7 +623,9 @@ const PostToLet = () => {
           </div>
 
           <div className="mt-10">
-            <p className="text-2xl font-extrabold">Contact Information</p>
+            <p className="text-xl lg:text-2xl font-extrabold">
+              Contact Information
+            </p>
             <p className="text-gray-400 mt-2">
               How can prospective tenants get in touch with you?
             </p>
@@ -677,7 +717,7 @@ const PostToLet = () => {
           <div className="flex justify-center mt-10">
             <input
               type="submit"
-              className="py-4 px-16 font-semibold rounded bg-green-500 text-white"
+              className="py-4 px-16 font-semibold rounded bg-green-500 text-white cursor-pointer"
             />
           </div>
         </form>

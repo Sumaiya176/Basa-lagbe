@@ -11,6 +11,7 @@ const authApi = baseApi.injectEndpoints({
           body: body,
         };
       },
+      invalidatesTags: ["Listing"],
     }),
 
     getAllListing: builder.query({
@@ -20,6 +21,7 @@ const authApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: ["Listing"],
     }),
 
     getSingleListing: builder.query({
@@ -49,6 +51,7 @@ const authApi = baseApi.injectEndpoints({
           method: "DELETE",
         };
       },
+      invalidatesTags: ["Listing"],
     }),
 
     myListing: builder.query({
@@ -75,7 +78,6 @@ const authApi = baseApi.injectEndpoints({
 
     getSavedProperty: builder.query({
       query: () => {
-        console.log("bbbbj");
         return {
           url: "/listing/savedProperty",
           method: "GET",
