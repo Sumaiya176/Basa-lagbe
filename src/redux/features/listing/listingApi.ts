@@ -66,7 +66,6 @@ const authApi = baseApi.injectEndpoints({
 
     savedProperty: builder.mutation({
       query: (id) => {
-        console.log("kkkkkk", id);
         return {
           url: "/listing/savedProperty",
           method: "POST",
@@ -88,13 +87,43 @@ const authApi = baseApi.injectEndpoints({
 
     removeSavedProperty: builder.mutation({
       query: (id) => {
-        console.log("bbbbj", id);
         return {
           url: `/listing/savedProperty/${id}`,
           method: "DELETE",
         };
       },
       invalidatesTags: ["SavedProperty"],
+    }),
+
+    recentlyViewed: builder.mutation({
+      query: (id) => {
+        return {
+          url: "/listing/recentlyViewed",
+          method: "POST",
+          body: { id },
+        };
+      },
+      invalidatesTags: ["RecentlyViewedProperty"],
+    }),
+
+    getViewedProperty: builder.query({
+      query: () => {
+        return {
+          url: "/listing/recentlyViewed",
+          method: "GET",
+        };
+      },
+      providesTags: ["RecentlyViewedProperty"],
+    }),
+
+    removeViewedProperty: builder.mutation({
+      query: (id) => {
+        return {
+          url: `/listing/recentlyViewed/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["RecentlyViewedProperty"],
     }),
   }),
 });
@@ -109,4 +138,7 @@ export const {
   useSavedPropertyMutation,
   useGetSavedPropertyQuery,
   useRemoveSavedPropertyMutation,
+  useRecentlyViewedMutation,
+  useGetViewedPropertyQuery,
+  useRemoveViewedPropertyMutation,
 } = authApi;

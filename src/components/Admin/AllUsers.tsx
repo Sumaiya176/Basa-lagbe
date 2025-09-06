@@ -33,7 +33,7 @@ const AllUsers = () => {
       className: "min-w-[140px]",
     },
     {
-      key: "_id", // use _id as key so we can identify row
+      key: "_id",
       header: "Actions",
       className: "min-w-[160px]",
       render: (row) => (
@@ -55,7 +55,7 @@ const AllUsers = () => {
     },
   ];
 
-  //console.log(data);
+  console.log(data);
 
   return (
     <main className="mx-auto max-w-6xl p-4 md:p-6">

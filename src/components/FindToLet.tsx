@@ -3,11 +3,13 @@ import ProtectedRoute from "@/app/(main)/ProtectedRoute";
 import {
   useGetAllListingQuery,
   useSavedPropertyMutation,
+  useGetSavedPropertyQuery,
+  useRecentlyViewedMutation,
 } from "@/redux/features/listing/listingApi";
 import { bangladeshAdministrativeAreas } from "@/utils/district";
 //import { listings } from "@/utils/Listings";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoBedOutline } from "react-icons/io5";
 import { PiBathtub } from "react-icons/pi";
 import { MdOutlineBalcony } from "react-icons/md";
@@ -21,14 +23,16 @@ const notify = (text: string) => toast(text);
 
 const FindToLet = () => {
   const { data } = useGetAllListingQuery(undefined);
+  const { data: allSavedProperty } = useGetSavedPropertyQuery(undefined);
   const [savedProperty] = useSavedPropertyMutation();
+  const [recentlyViewed] = useRecentlyViewedMutation();
   const [divisionName, setDivisionName] = useState<string>("");
   const [districtName, setDistrictName] = useState<string>("");
   const [propertyType, setPropertyType] = useState<string>("");
   const [thana, setThana] = useState<string>("");
   const [minPrice, setMinPrice] = useState<number>();
   const [maxPrice, setMaxPrice] = useState<number>();
-  const [saveProperty, setSaveProperty] = useState<boolean>(false);
+  const [savePropertyId, setSavePropertyId] = useState<string[]>([]);
   const router = useRouter();
 
   const listings = useMemo(() => {
@@ -73,7 +77,7 @@ const FindToLet = () => {
     try {
       const result = await savedProperty(id).unwrap();
       if (result?.isSuccess) {
-        setSaveProperty(true);
+        setSavePropertyId((prev) => (prev.includes(id) ? prev : [...prev, id]));
         //console.log(result?.message);
         notify(result?.message);
       }
@@ -90,17 +94,31 @@ const FindToLet = () => {
       setMaxPrice(undefined);
   };
 
-  const handleView = (id: string) => {};
+  const handleView = async (id: string) => {
+    try {
+      const result = await recentlyViewed(id).unwrap();
+      console.log(result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    allSavedProperty?.data?.forEach((element: any) => {
+      setSavePropertyId((prev) => [...prev, element?._id]);
+    });
+  }, [allSavedProperty]);
 
   return (
     <div className="mb-20 mt-5">
-      <div className="grid 3xs:grid-cols-1 2xs:grid-cols-2 2xs:gap-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 md:gap-6 mb-10 lg:grid-cols-4 lg:gap-5 xl:grid-cols-5 xl:gap-5 2xl:grid-cols-6 2xl:gap-5">
+      <div className="grid 3xs:grid-cols-1 2xs:grid-cols-2 2xs:gap-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 md:gap-6 mb-10 lg:grid-cols-4 lg:gap-5 xl:grid-cols-5 xl:gap-5 2xl:grid-cols-5 2xl:gap-3">
         <div>
           <p className="text-stone-500 mb-1">Type</p>
           <select
             onChange={(e) => setPropertyType(e.target.value)}
             className="w-full  border text-sm border-stone-400 rounded"
           >
+            <option value="">Select option</option>
             <option value="family">Family</option>
             <option value="sublet">Sublet</option>
             <option value="office">Office</option>
@@ -112,6 +130,7 @@ const FindToLet = () => {
             onChange={(e) => setDivisionName(e.target.value)}
             className="w-full  border text-sm border-stone-400 rounded"
           >
+            <option value="">Select option</option>
             {bangladeshAdministrativeAreas?.map((division: any) => (
               <option key={division.division} value={division.division}>
                 {division.division}
@@ -220,7 +239,9 @@ const FindToLet = () => {
                     <TiHeart
                       onClick={() => handleSaveProperty(list?._id)}
                       className={`text-2xl ${
-                        saveProperty ? "text-red-500" : "text-gray-500"
+                        savePropertyId.includes(list?._id)
+                          ? "text-red-500"
+                          : "text-gray-500"
                       } inline-block align-middle`}
                     />
                     <p className="text-[tomato]  2xs:text-sm text-base font-semibold flex justify-start items-end">

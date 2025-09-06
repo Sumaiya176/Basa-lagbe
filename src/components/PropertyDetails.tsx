@@ -1,19 +1,17 @@
 "use client";
 
-import { useGetSingleListingQuery } from "@/redux/features/listing/listingApi";
+import {
+  useGetSavedPropertyQuery,
+  useGetSingleListingQuery,
+  useSavedPropertyMutation,
+} from "@/redux/features/listing/listingApi";
 import { useParams } from "next/navigation";
 
 import ParallaxCarousel from "./ParallaxCarousel";
-import { EmblaOptionsType } from "embla-carousel";
-const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
-import { IoBedOutline } from "react-icons/io5";
-import { PiBathtub } from "react-icons/pi";
-import { MdOutlineBalcony } from "react-icons/md";
-import { TbStairs } from "react-icons/tb";
+
 import {
   Bed,
   Bath,
-  Home,
   MapPin,
   Calendar,
   Building2,
@@ -22,12 +20,38 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import LocationMap from "./Map/LocationMap";
+import { GoHeartFill } from "react-icons/go";
+import { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+
+const notify = (text: string) => toast(text);
 
 const PropertyDetails = () => {
   const params = useParams<{ id: string }>();
+  const { data: allSavedProperty } = useGetSavedPropertyQuery(undefined);
+  const [savedProperty] = useSavedPropertyMutation();
+  const [savePropertyId, setSavePropertyId] = useState<string[]>([]);
 
   const { data } = useGetSingleListingQuery(params?.id);
   console.log(data);
+  const handleSaveProperty = async (id: string) => {
+    try {
+      const result = await savedProperty(id).unwrap();
+      if (result?.isSuccess) {
+        setSavePropertyId((prev) => (prev.includes(id) ? prev : [...prev, id]));
+        //console.log(result?.message);
+        notify(result?.message);
+      }
+    } catch (err: any) {
+      notify(err?.data?.message);
+    }
+  };
+
+  useEffect(() => {
+    allSavedProperty?.data?.forEach((element: any) => {
+      setSavePropertyId((prev) => [...prev, element?._id]);
+    });
+  }, [allSavedProperty]);
   return (
     <div>
       {data?.data?.propertyImages.length === 0 ? (
@@ -40,55 +64,13 @@ const PropertyDetails = () => {
         <div className="flex justify-center items-center my-5">
           <Image
             src={data?.data?.propertyImages[0]}
-            alt="tolet"
+            alt="to-let"
             height={500}
             width={600}
             className="max-w-96 max-h-60 w-full h-full"
           />
         </div>
       )}
-      {/* <div className="mt-10 border rounded px-10 py-7">
-        <p className="text-lg mb-3 font-semibold">Basic Information</p>
-        <div className="flex justify-between gap-5">
-          <div className="flex gap-2 items-center text-stone-500">
-            <IoBedOutline />
-            <p>Bedroom : {data?.data?.bedroom}</p>
-          </div>
-          <div className="flex gap-2 items-center text-stone-500">
-            <PiBathtub />
-            <p>Bathroom : {data?.data?.bathroom}</p>
-          </div>
-          <div className="flex gap-2 items-center text-stone-500">
-            <MdOutlineBalcony />
-            <p>Balcony : {data?.data?.balcony}</p>
-          </div>
-          <div className="flex gap-2 items-center text-stone-500">
-            <TbStairs />
-            <p>Floor : 2</p>
-          </div>
-        </div>
-      </div>
-      <div className="mt-10 border rounded px-10 py-7">
-        <p className="text-lg mb-3 font-semibold">Location Information </p>
-        <div className="flex justify-between gap-5">
-          <div className="flex gap-2 items-center text-stone-500">
-            <IoBedOutline />
-            <p>Bedroom : {data?.data?.bedroom}</p>
-          </div>
-          <div className="flex gap-2 items-center text-stone-500">
-            <PiBathtub />
-            <p>Bathroom : {data?.data?.bathroom}</p>
-          </div>
-          <div className="flex gap-2 items-center text-stone-500">
-            <MdOutlineBalcony />
-            <p>Balcony : {data?.data?.balcony}</p>
-          </div>
-          <div className="flex gap-2 items-center text-stone-500">
-            <TbStairs />
-            <p>Floor : 2</p>
-          </div>
-        </div>
-      </div> */}
 
       {/* Property Information */}
       <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
@@ -135,14 +117,24 @@ const PropertyDetails = () => {
 
         {/* Location Info */}
         <div className="gap-3 border-t pt-4">
-          <div className="flex gap-3">
-            <MapPin className="w-6 h-6 text-blue-500 mt-1" />
-            <h2 className="mb-3 text-2xl font-semibold text-gray-900">
-              Location
-            </h2>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="flex gap-3">
+              <MapPin className="w-6 h-6 text-blue-500 mt-1" />
+              <h2 className="mb-3 text-2xl font-semibold text-gray-900">
+                Location
+              </h2>
+            </div>
+            <GoHeartFill
+              onClick={() => handleSaveProperty(data?.data?._id)}
+              className={`text-2xl ${
+                savePropertyId.includes(data?.data?._id)
+                  ? "text-red-500"
+                  : "text-gray-500"
+              } tet-4xl cursor-pointer`}
+            />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
             <div className="lg:flex gap-2 items-center text-stone-500">
               <p className="font-semibold">Division </p>
               <p>{data?.data?.district}</p>
@@ -169,7 +161,16 @@ const PropertyDetails = () => {
             />
           ) : null}
         </div>
+        {data?.data?.description ? (
+          <div>
+            <h2 className="mb-3 text-2xl font-semibold text-gray-900">
+              Description
+            </h2>
+            <p>{data?.data?.description}</p>
+          </div>
+        ) : null}
       </div>
+      <ToastContainer />
     </div>
   );
 };

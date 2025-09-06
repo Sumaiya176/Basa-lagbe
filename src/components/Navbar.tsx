@@ -1,13 +1,20 @@
 "use client";
 import { useLogoutMutation } from "@/redux/features/auth/authApi";
-import { currentToken, logout } from "@/redux/features/auth/authSlice";
+import {
+  currentToken,
+  currentUser,
+  logout,
+} from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { ToastContainer, toast } from "react-toastify";
 import Link from "next/link";
+import Image from "next/image";
+import { verifyToken } from "@/utils/verifyToken";
 
 const Navbar = () => {
   const [logOut] = useLogoutMutation();
   const token = useAppSelector(currentToken);
+  const user = useAppSelector(currentUser);
   const dispatch = useAppDispatch();
   const notify = (text: string) => toast(text);
 
@@ -56,7 +63,11 @@ const Navbar = () => {
             </li>
 
             <li>
-              <Link href="/user/myListings">User Listings</Link>
+              {user?.role === "user" ? (
+                <Link href="/user/dashboard">User Listings</Link>
+              ) : (
+                <Link href="/admin/dashboard">Admin</Link>
+              )}
             </li>
             <li>
               <Link href="/">About Us</Link>
@@ -64,12 +75,22 @@ const Navbar = () => {
             <li>
               <Link href="/">Contact</Link>
             </li>
+            {/* <li onClick={() => handleLogout()}>Logout</li> */}
             <li>
               {token ? (
-                <button className="cursor-pointer" onClick={handleLogout}>
-                  {" "}
-                  LogOut
-                </button>
+                <Link href="/profile">
+                  <div className="avatar">
+                    <div className="mask mask-hexagon-2 w-8">
+                      <Image
+                        src="/userAvatar.png"
+                        alt="user"
+                        width={20}
+                        height={20}
+                      />
+                      <p className="text-center">{user?.name}</p>
+                    </div>
+                  </div>
+                </Link>
               ) : (
                 <Link className="cursor-pointer" href="/login">
                   Login
@@ -91,7 +112,11 @@ const Navbar = () => {
             <Link href="/user/post-toLet">Post To-Let</Link>
           </li>
           <li>
-            <Link href="/user/myListings">User Listings</Link>
+            {user?.role === "user" ? (
+              <Link href="/user/dashboard">User Listings</Link>
+            ) : (
+              <Link href="/admin/dashboard">Admin</Link>
+            )}
           </li>
           <li>
             <Link href="/aboutUs">About Us</Link>
@@ -99,12 +124,23 @@ const Navbar = () => {
           <li>
             <Link href="/contact">Contact</Link>
           </li>
+
+          {/* <li onClick={() => handleLogout()}>Logout</li> */}
           <li>
             {token ? (
-              <button className="cursor-pointer" onClick={handleLogout}>
-                {" "}
-                LogOut
-              </button>
+              <Link href="/profile">
+                <div className="avatar">
+                  <div className="mask mask-hexagon-2 w-8">
+                    <Image
+                      src="/userAvatar.png"
+                      alt="user"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <span>{user?.name}</span>
+                </div>
+              </Link>
             ) : (
               <Link className="cursor-pointer" href="/login">
                 Login

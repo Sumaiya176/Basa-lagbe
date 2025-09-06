@@ -10,9 +10,8 @@ interface Props {
 }
 
 export default function LocationMap({ latitude, longitude, address }: Props) {
-  console.log(latitude, longitude, address);
   return (
-    <div className="h-80 w-full">
+    <div className="h-96 w-full">
       <MapContainer
         center={[latitude, longitude]}
         zoom={15}

@@ -7,7 +7,7 @@ import { IoArrowForwardCircleOutline } from "react-icons/io5";
 import { CgPlayListAdd } from "react-icons/cg";
 import { TbHomeCheck } from "react-icons/tb";
 import { GiNestedHearts } from "react-icons/gi";
-import { GoEye } from "react-icons/go";
+import { GrUserAdmin } from "react-icons/gr";
 import ProtectedRoute from "../(main)/ProtectedRoute";
 
 const sidebarData = [
@@ -35,12 +35,12 @@ const sidebarData = [
     title: "All Listings",
     url: "/admin/allListings",
   },
-  // {
-  //   id: 5,
-  //   icon: <GiNestedHearts className="text-2xl text-[tomato]" />,
-  //   title: "Saved Listings",
-  //   url: "/user/savedProperty",
-  // },
+  {
+    id: 5,
+    icon: <GrUserAdmin className="text-2xl text-[tomato]" />,
+    title: "Saved Listings",
+    url: "/admin/createAdmin",
+  },
   // {
   //   id: 6,
   //   icon: <GoEye className="text-2xl text-[tomato]" />,

@@ -11,7 +11,7 @@ export type User = {
   _id: string;
   userName: string;
   email: string;
-  role: string;
+  role: "user" | "admin" | "superAdmin";
   provider: number;
   status: number;
 };

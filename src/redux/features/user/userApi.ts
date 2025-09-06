@@ -8,7 +8,15 @@ const userApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getUser: builder.query({
+      query: () => ({
+        url: `/user/getSingleUser`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
-export const { useGetAllUsersQuery } = userApi;
+export const { useGetAllUsersQuery, useGetUserQuery } = userApi;

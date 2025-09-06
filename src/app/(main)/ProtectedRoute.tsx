@@ -1,6 +1,6 @@
 "use client";
 
-import { currentToken } from "@/redux/features/auth/authSlice";
+import { currentToken, currentUser } from "@/redux/features/auth/authSlice";
 import { useAppSelector } from "@/redux/hooks";
 import { verifyToken } from "@/utils/verifyToken";
 import { JwtPayload } from "jwt-decode";
@@ -11,20 +11,21 @@ import { ToastContainer, toast } from "react-toastify";
 const notify = (text: string) => toast(text);
 
 interface CustomJwtPayload extends JwtPayload {
-  role?: string;
+  role?: "user" | "admin" | "superAdmin";
 }
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const token = useAppSelector(currentToken);
+  const user = useAppSelector(currentUser);
   const router = useRouter();
   const urlPrefix = pathname.split("/")?.[1];
 
-  if (urlPrefix === "admin") {
+  if (urlPrefix === "admin" && token) {
     const decoded: CustomJwtPayload = verifyToken(token as string);
-    console.log(decoded);
     const { role } = decoded;
-    if (role !== "admin") {
+
+    if (role !== "admin" && role !== "superAdmin") {
       notify("You are not authorized user");
       <ToastContainer />;
       router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
@@ -33,7 +34,7 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
   // console.log(pathname.split("/")?.[1]);
 
-  if (!token) {
+  if (!token && !user) {
     router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
   }
   return children;

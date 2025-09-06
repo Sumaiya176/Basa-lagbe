@@ -44,7 +44,7 @@ const sidebarData = [
     id: 6,
     icon: <GoEye className="text-2xl text-[tomato]" />,
     title: "Recently Viewed",
-    url: "",
+    url: "/user/viewedProperty",
   },
 ];
 export default function MainLayout({

@@ -26,8 +26,30 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
       }),
     }),
+
+    resetPassword: builder.mutation({
+      query: (body) => ({
+        url: `/auth/reset-password`,
+        method: "POST",
+        body,
+      }),
+    }),
+
+    editProfile: builder.mutation({
+      query: (body) => ({
+        url: `/auth/edit-profile`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation } =
-  authApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useLogoutMutation,
+  useResetPasswordMutation,
+  useEditProfileMutation,
+} = authApi;
