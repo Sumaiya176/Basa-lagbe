@@ -5,33 +5,17 @@ import {
   currentUser,
   logout,
 } from "@/redux/features/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import {  useAppSelector } from "@/redux/hooks";
 import { ToastContainer, toast } from "react-toastify";
 import Link from "next/link";
 import Image from "next/image";
-import { verifyToken } from "@/utils/verifyToken";
+
 
 const Navbar = () => {
-  const [logOut] = useLogoutMutation();
   const token = useAppSelector(currentToken);
   const user = useAppSelector(currentUser);
-  const dispatch = useAppDispatch();
-  const notify = (text: string) => toast(text);
 
-  const handleLogout = async () => {
-    try {
-      dispatch(logout());
-      const result = await logOut("").unwrap();
-      if (result?.isSuccess) {
-        notify(result?.message);
-      }
-      console.log(result);
-      console.log();
-      // router.push("/login");
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
+
 
   return (
     <div className="navbar bg-base-100 shadow-sm">

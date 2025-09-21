@@ -49,7 +49,7 @@ const PropertyDetails = () => {
 
   useEffect(() => {
     allSavedProperty?.data?.forEach((element: any) => {
-      setSavePropertyId((prev) => [...prev, element?._id]);
+      setSavePropertyId((prev) => [...prev, element?.listingId?._id]);
     });
   }, [allSavedProperty]);
   return (

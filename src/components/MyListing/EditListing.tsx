@@ -18,8 +18,9 @@ export type Inputs = {
   availability: string;
   description?: string;
   street?: string;
-  city: string;
+  thana: string;
   district: string;
+  division: string;
   area: string;
   rent: number;
   advance: number;
@@ -233,15 +234,15 @@ const EditListing = ({ listing }: any) => {
               </div>
 
               <div>
-                <p className="font-medium">City </p>
+                <p className="font-medium">Thana </p>
                 <input
                   placeholder="e.g. Dhaka"
                   type="text"
                   className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
-                  {...register("city", { required: "City is required" })}
+                  {...register("thana", { required: "Thana is required" })}
                 />
-                {errors.city && (
-                  <span className="text-red-600">{errors.city.message}</span>
+                {errors.thana && (
+                  <span className="text-red-600">{errors.thana.message}</span>
                 )}
               </div>
               <div>

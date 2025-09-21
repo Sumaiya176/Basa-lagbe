@@ -33,7 +33,6 @@ const Login = () => {
       const result = await login(data).unwrap();
 
       if (result?.isSuccess) {
-        //console.log(result?.message);
         const user = verifyToken(result.data.accessToken);
         console.log("from login.tsx file", user, result.data.accessToken);
         dispatch(setUser({ user, token: result.data.accessToken }));

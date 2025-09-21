@@ -24,12 +24,15 @@ const CreateAdmin = () => {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/create-admin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
+      const res = await fetch(
+        "https://basa-lagbe-server.vercel.app/api/users/create-admin",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(data),
+        }
+      );
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || "Failed to create admin");

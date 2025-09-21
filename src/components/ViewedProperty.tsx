@@ -1,6 +1,6 @@
 "use client";
 
-import { IListing } from "@/interfaces/interfaces";
+import { IListing, TSavedProperty } from "@/interfaces/interfaces";
 import {
   useGetViewedPropertyQuery,
   useRemoveViewedPropertyMutation,
@@ -67,20 +67,21 @@ const ViewedProperty = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems?.map((listing: IListing, i: number) => (
+            {currentItems?.map((listing: TSavedProperty, i: number) => (
               <tr
                 key={listing._id}
                 className="border-b hover:bg-gray-50 transition"
               >
                 <td className="px-4 py-3">{i + 1}</td>
                 <td className="px-4 py-3">
-                  <p>{listing?.propertyType}</p>
+                  <p>{listing?.listingId?.propertyType}</p>
                   <p className="text-gray-400">
-                    {listing?.area}, {listing?.city}, {listing?.district}
+                    {listing?.listingId?.thana}, {listing?.listingId?.district},{" "}
+                    {listing?.listingId?.division}
                   </p>
                 </td>
                 <td className="px-4 py-3">
-                  {new Date(listing?.updatedAt).toLocaleString()}
+                  {new Date(listing?.savedAt).toLocaleString()}
                 </td>
                 <td className="px-4 py-3 space-x-3 space-y-2">
                   <button className="bg-stone-500 py-3 px-5 text-white rounded">

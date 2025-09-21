@@ -1,8 +1,12 @@
 "use client";
 
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
+import { verifyToken } from "@/utils/verifyToken";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -16,6 +20,10 @@ type Inputs = {
 const Register = () => {
   const [registerInfo] = useRegisterMutation();
   const notify = (text: string) => toast(text);
+  const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
+
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -27,9 +35,13 @@ const Register = () => {
     try {
       const result = await registerInfo(data).unwrap();
       console.log(result, result?.isSuccess);
-      if (result?.isSuccess) {
-        //console.log(result?.message);
+      if (result?.isSuccess === true) {
+        const user = verifyToken(result.data.accessToken);
+        console.log("from register.tsx file", user, result.data.accessToken);
+        dispatch(setUser({ user, token: result.data.accessToken }));
         notify(result?.message);
+
+        router.push(searchParams.get("redirect") || "/");
       }
     } catch (err: any) {
       notify(err?.data?.message);

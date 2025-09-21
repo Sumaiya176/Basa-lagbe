@@ -309,7 +309,7 @@ const PostToLet = () => {
                   className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
                   required
                 >
-                  <option value="">Select Division</option>
+                  <option value="">Select District</option>
                   {bangladeshAdministrativeAreas
                     ?.find(
                       (division: any) => division.division === divisionName
@@ -328,7 +328,7 @@ const PostToLet = () => {
                   className="border border-stone-400 rounded mt-2 px-4 h-12 w-full"
                   required
                 >
-                  <option value="">Select Division</option>
+                  <option value="">Select Thana</option>
                   {bangladeshAdministrativeAreas
                     ?.find(
                       (division: any) => division.division === divisionName

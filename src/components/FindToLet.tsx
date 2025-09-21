@@ -105,7 +105,7 @@ const FindToLet = () => {
 
   useEffect(() => {
     allSavedProperty?.data?.forEach((element: any) => {
-      setSavePropertyId((prev) => [...prev, element?._id]);
+      setSavePropertyId((prev) => [...prev, element?.listingId?._id]);
     });
   }, [allSavedProperty]);
 
@@ -209,7 +209,7 @@ const FindToLet = () => {
           <div
             key={list?._id}
             className="min-w-[160px] max-w-full 3xs:max-w-[180] 2xs:max-w-[190px] 1xs:max-w-[270px] md:max-w-[270px]
-              border border-red-500 flex-shrink-0 rounded"
+              border flex-shrink-0 rounded"
           >
             <Image
               //src="/hero1.jpg"

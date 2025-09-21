@@ -4,15 +4,18 @@ import {
   useEditProfileMutation,
   useResetPasswordMutation,
 } from "@/redux/features/auth/authApi";
-import { currentUser } from "@/redux/features/auth/authSlice";
+import { currentUser, logout } from "@/redux/features/auth/authSlice";
 import { useGetUserQuery } from "@/redux/features/user/userApi";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import ProtectedRoute from "@/app/(main)/ProtectedRoute";
 
 const notify = (text: string) => toast(text);
 
 const UserProfile = () => {
+  const [logOut] = useLogoutMutation();
   const { data: user } = useGetUserQuery(undefined);
   const [userData, setUserData] = useState<{ name: string; email: string }>();
   const [changingPassword, setChangingPassword] = useState(false);
@@ -23,6 +26,7 @@ const UserProfile = () => {
   const [resetPassword] = useResetPasswordMutation();
   //const user = useAppSelector(currentUser);
   const [editProfile] = useEditProfileMutation();
+  const dispatch = useAppDispatch();
 
   // Example user data (replace with API data)
   // const [user, setUser] = useState({
@@ -82,6 +86,21 @@ const UserProfile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      const result = await logOut("").unwrap();
+      if (result?.isSuccess) {
+        notify(result?.message);
+      }
+      console.log(result);
+      console.log();
+      // router.push("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
   useEffect(() => {
     setUserData({
       name: user?.data?.userName as string,
@@ -90,110 +109,117 @@ const UserProfile = () => {
   }, [user]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl">
-        <div className="card-body space-y-6">
-          {/* Profile Info */}
-          <div>
-            <h2 className="card-title">My Profile</h2>
-            <p className="text-sm text-gray-500 mt-2">Username</p>
-            <p className="font-medium">{userData?.name}</p>
-            <p className="text-sm text-gray-500 mt-3">Email</p>
-            <p className="font-medium">{userData?.email}</p>
-            <button
-              className="btn btn-primary w-full mt-4"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Edit Profile
-            </button>
-          </div>
-
-          {/* Change Password */}
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Reset Password</h3>
-            {!changingPassword ? (
+    <ProtectedRoute>
+      <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
+        <div className="card w-full max-w-md bg-base-100 shadow-xl">
+          <div className="card-body space-y-6">
+            {/* Profile Info */}
+            <div>
+              <h2 className="card-title">My Profile</h2>
+              <p className="text-sm text-gray-500 mt-2">Username</p>
+              <p className="font-medium">{userData?.name}</p>
+              <p className="text-sm text-gray-500 mt-3">Email</p>
+              <p className="font-medium">{userData?.email}</p>
               <button
-                className="btn btn-outline w-full"
-                onClick={() => setChangingPassword(true)}
+                className="btn btn-primary w-full mt-4"
+                onClick={() => setIsModalOpen(true)}
               >
-                Reset Password
+                Edit Profile
               </button>
-            ) : (
-              <form className="space-y-3">
-                <input
-                  type="password"
-                  placeholder="Old Password"
-                  className="input input-bordered w-full"
-                  onChange={(e) => setOldPassword(e.target.value)}
-                />
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  className="input input-bordered w-full"
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm New Password"
-                  className="input input-bordered w-full"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <button
-                  onClick={() => handleResetPassword()}
-                  className="btn btn-success w-full"
-                >
-                  Update Password
-                </button>
-              </form>
-            )}
-          </div>
+            </div>
 
-          {/* Logout */}
-          <div>
-            <button className="btn btn-error w-full">Logout</button>
+            {/* Change Password */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Reset Password</h3>
+              {!changingPassword ? (
+                <button
+                  className="btn btn-outline w-full"
+                  onClick={() => setChangingPassword(true)}
+                >
+                  Reset Password
+                </button>
+              ) : (
+                <form className="space-y-3">
+                  <input
+                    type="password"
+                    placeholder="Old Password"
+                    className="input input-bordered w-full"
+                    onChange={(e) => setOldPassword(e.target.value)}
+                  />
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    className="input input-bordered w-full"
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password"
+                    className="input input-bordered w-full"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    onClick={() => handleResetPassword()}
+                    className="btn btn-success w-full"
+                  >
+                    Update Password
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Logout */}
+            <div>
+              <button
+                onClick={() => handleLogout()}
+                className="btn btn-error w-full"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <dialog open className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Edit Profile</h3>
-            <form onSubmit={handleUpdateProfile} className="space-y-3 mt-4">
-              <input
-                type="text"
-                name="userName"
-                defaultValue={userData?.name}
-                className="input input-bordered w-full"
-              />
-              <input
-                type="email"
-                name="email"
-                defaultValue={userData?.email}
-                className="input input-bordered w-full"
-              />
-              <div className="modal-action">
-                <button type="submit" className="btn btn-primary">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </button>
-              </div>
+        {/* Modal */}
+        {isModalOpen && (
+          <dialog open className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Edit Profile</h3>
+              <form onSubmit={handleUpdateProfile} className="space-y-3 mt-4">
+                <input
+                  type="text"
+                  name="userName"
+                  defaultValue={userData?.name}
+                  className="input input-bordered w-full"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  defaultValue={userData?.email}
+                  className="input input-bordered w-full"
+                />
+                <div className="modal-action">
+                  <button type="submit" className="btn btn-primary">
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button onClick={() => setIsModalOpen(false)}>close</button>
             </form>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={() => setIsModalOpen(false)}>close</button>
-          </form>
-        </dialog>
-      )}
-      <ToastContainer />
-    </div>
+          </dialog>
+        )}
+        <ToastContainer />
+      </div>
+    </ProtectedRoute>
   );
 };
 

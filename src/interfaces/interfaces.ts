@@ -29,3 +29,9 @@ export type TSidebar = {
   title: string;
   url: string;
 };
+
+export type TSavedProperty = {
+  _id: string;
+  listingId: IListing;
+  savedAt: string;
+};
