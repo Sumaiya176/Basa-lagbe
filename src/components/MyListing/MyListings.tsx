@@ -84,7 +84,7 @@ const MyListings = () => {
                 <td>{listing?.size}</td>
 
                 <td>{listing?.street}</td>
-                <td>{listing?.city}</td>
+                <td>{listing?.thana}</td>
                 <td>{listing?.district}</td>
                 <td>{listing?.area}</td>
                 <td>{listing?.rent}</td>
