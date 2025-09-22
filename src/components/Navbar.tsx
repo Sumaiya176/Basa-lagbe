@@ -5,17 +5,15 @@ import {
   currentUser,
   logout,
 } from "@/redux/features/auth/authSlice";
-import {  useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/redux/hooks";
 import { ToastContainer, toast } from "react-toastify";
 import Link from "next/link";
 import Image from "next/image";
 
-
 const Navbar = () => {
   const token = useAppSelector(currentToken);
   const user = useAppSelector(currentUser);
-
-
+  console.log(user);
 
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -46,13 +44,15 @@ const Navbar = () => {
               <Link href="/user/post-toLet">Post To-Let</Link>
             </li>
 
-            <li>
-              {user?.role === "user" ? (
-                <Link href="/user/dashboard">User Listings</Link>
-              ) : (
-                <Link href="/admin/dashboard">Admin</Link>
-              )}
-            </li>
+            {user && (
+              <li>
+                {user?.role === "user" ? (
+                  <Link href="/user/dashboard">User Listings</Link>
+                ) : user?.role === "admin" ? (
+                  <Link href="/admin/dashboard">Admin</Link>
+                ) : null}
+              </li>
+            )}
             <li>
               <Link href="/">About Us</Link>
             </li>
@@ -95,13 +95,15 @@ const Navbar = () => {
           <li>
             <Link href="/user/post-toLet">Post To-Let</Link>
           </li>
-          <li>
-            {user?.role === "user" ? (
-              <Link href="/user/dashboard">User Listings</Link>
-            ) : (
-              <Link href="/admin/dashboard">Admin</Link>
-            )}
-          </li>
+          {user && (
+            <li>
+              {user?.role === "user" ? (
+                <Link href="/user/dashboard">User Listings</Link>
+              ) : user?.role === "admin" ? (
+                <Link href="/admin/dashboard">Admin</Link>
+              ) : null}
+            </li>
+          )}
           <li>
             <Link href="/aboutUs">About Us</Link>
           </li>
@@ -122,7 +124,9 @@ const Navbar = () => {
                       height={20}
                     />
                   </div>
-                  <span>{user?.name}</span>
+                  <span className="flex justify-center items-center ps-2 text-[tomato]">
+                    {user?.name}
+                  </span>
                 </div>
               </Link>
             ) : (

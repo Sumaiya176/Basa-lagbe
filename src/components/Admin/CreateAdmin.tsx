@@ -2,6 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useCreateAdminMutation } from "@/redux/features/user/userApi";
+import { ToastContainer, toast } from "react-toastify";
 
 type FormValues = {
   userName: string;
@@ -9,7 +11,10 @@ type FormValues = {
   password: string;
 };
 
+const notify = (text: string) => toast(text);
+
 const CreateAdmin = () => {
+  const [createAdmin] = useCreateAdminMutation();
   const {
     register,
     handleSubmit,
@@ -17,30 +22,25 @@ const CreateAdmin = () => {
     reset,
   } = useForm<FormValues>();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
-    setMessage("");
+    console.log(data);
 
     try {
-      const res = await fetch(
-        "https://basa-lagbe-server.vercel.app/api/users/create-admin",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(data),
-        }
-      );
+      const admin = { ...data, provider: "credentials" };
+      const res = await createAdmin(admin).unwrap();
+      console.log(res);
+      if (res.isSuccess === true) {
+        notify(`✅ Admin user ${res?.data?.userName} created successfully`);
+      }
+      if (!res.isSuccess)
+        throw new Error(res.message || "Failed to create admin");
 
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || "Failed to create admin");
-
-      setMessage(`✅ Admin user "${data.userName}" created successfully`);
       reset();
     } catch (error: any) {
-      setMessage(`❌ ${error.message}`);
+      console.log(error);
+      notify(`❌ ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -102,8 +102,7 @@ const CreateAdmin = () => {
           {loading ? "Creating..." : "Create Admin"}
         </button>
       </form>
-
-      {message && <div className="mt-4 text-center font-medium">{message}</div>}
+      <ToastContainer />
     </div>
   );
 };

@@ -30,6 +30,12 @@ const sidebarData = [
     url: "/admin/allUsers",
   },
   {
+    id: 3,
+    icon: <TbHomeCheck className="text-2xl text-[tomato]" />,
+    title: "All Admins",
+    url: "/admin/allAdmins",
+  },
+  {
     id: 4,
     icon: <CgPlayListAdd className="text-2xl text-[tomato]" />,
     title: "All Listings",
@@ -38,7 +44,7 @@ const sidebarData = [
   {
     id: 5,
     icon: <GrUserAdmin className="text-2xl text-[tomato]" />,
-    title: "Saved Listings",
+    title: "Create Admin",
     url: "/admin/createAdmin",
   },
   // {

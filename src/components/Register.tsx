@@ -3,7 +3,7 @@
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/redux/hooks";
-import { verifyToken } from "@/utils/verifyToken";
+import { jwtDecode } from "jwt-decode";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -34,11 +34,11 @@ const Register = () => {
     //console.log("data", data);
     try {
       const result = await registerInfo(data).unwrap();
-      console.log(result, result?.isSuccess);
-      if (result?.isSuccess === true) {
-        const user = verifyToken(result.data.accessToken);
-        console.log("from register.tsx file", user, result.data.accessToken);
+      if (result?.isSuccess === "true" || result?.isSuccess === true) {
+        const user = jwtDecode(result.data.accessToken);
+        console.log("from register.tsx file", user, result);
         dispatch(setUser({ user, token: result.data.accessToken }));
+
         notify(result?.message);
 
         router.push(searchParams.get("redirect") || "/");
