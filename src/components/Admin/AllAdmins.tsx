@@ -3,13 +3,16 @@
 import { useGetAllUsersQuery } from "@/redux/features/user/userApi";
 import Table from "./Table";
 import { Column, User } from "@/interfaces/interfaces";
+import { useAppSelector } from "@/redux/hooks";
+import { currentUser } from "@/redux/features/auth/authSlice";
 
 // Reusable DataTable component
 
 const AllAdmins = () => {
   const { data } = useGetAllUsersQuery(undefined);
+  const user = useAppSelector(currentUser);
 
-  const admins = data.data?.filter((items: User) => items.role === "admin");
+  const admins = data?.data?.filter((items: User) => items.role === "admin");
   const handleEdit = (id: string) => {
     console.log("Edit user:", id);
     // Example: navigate to edit page
@@ -20,7 +23,7 @@ const AllAdmins = () => {
     console.log("Delete user:", id);
     // Example: call API to delete user, then refetch data
   };
-  const columns: Column<User>[] = [
+  const baseColumns: Column<User>[] = [
     { key: "userName", header: "UserName", className: "min-w-[160px]" },
     { key: "email", header: "Email", className: "min-w-[120px]" },
     {
@@ -34,28 +37,32 @@ const AllAdmins = () => {
       header: "Status",
       className: "min-w-[140px]",
     },
-    {
-      key: "_id",
-      header: "Actions",
-      className: "min-w-[160px]",
-      render: (row) => (
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEdit(row._id)}
-            className="px-3 py-1 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDelete(row._id)}
-            className="px-3 py-1 rounded-md bg-red-500 text-white text-sm hover:bg-red-600"
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    },
   ];
+
+  const actionColumn: Column<User> = {
+    key: "_id",
+    header: "Actions",
+    className: "min-w-[160px]",
+    render: (row) => (
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleEdit(row._id)}
+          className="px-3 py-1 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => handleDelete(row._id)}
+          className="px-3 py-1 rounded-md bg-red-500 text-white text-sm hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </div>
+    ),
+  };
+
+  const columns: Column<User>[] =
+    user?.role === "admin" ? baseColumns : [...baseColumns, actionColumn];
 
   console.log(data);
 

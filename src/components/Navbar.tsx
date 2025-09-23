@@ -48,7 +48,7 @@ const Navbar = () => {
               <li>
                 {user?.role === "user" ? (
                   <Link href="/user/dashboard">User Listings</Link>
-                ) : user?.role === "admin" ? (
+                ) : user?.role === "admin" || "superAdmin" ? (
                   <Link href="/admin/dashboard">Admin</Link>
                 ) : null}
               </li>
@@ -99,7 +99,7 @@ const Navbar = () => {
             <li>
               {user?.role === "user" ? (
                 <Link href="/user/dashboard">User Listings</Link>
-              ) : user?.role === "admin" ? (
+              ) : user?.role === "admin" || "superAdmin" ? (
                 <Link href="/admin/dashboard">Admin</Link>
               ) : null}
             </li>

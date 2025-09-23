@@ -7,6 +7,7 @@ const userApi = baseApi.injectEndpoints({
         url: "/user",
         method: "GET",
       }),
+      providesTags: ["admin"],
     }),
 
     getUser: builder.query({
@@ -23,6 +24,7 @@ const userApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["admin"],
     }),
   }),
 });

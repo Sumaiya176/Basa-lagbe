@@ -28,7 +28,7 @@ const CreateAdmin = () => {
     console.log(data);
 
     try {
-      const admin = { ...data, provider: "credentials" };
+      const admin = { ...data, provider: "credentials", role: "admin" };
       const res = await createAdmin(admin).unwrap();
       console.log(res);
       if (res.isSuccess === true) {
