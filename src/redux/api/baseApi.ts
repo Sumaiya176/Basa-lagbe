@@ -9,7 +9,7 @@ import {
 } from "@reduxjs/toolkit/query";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://basa-lagbe.vercel.app/api",
+  baseUrl: "https://basa-lagbe-server.vercel.app/api",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -32,7 +32,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   if (result?.error?.status === 401) {
     //console.log("Sending fresh token");
     const res = await fetch(
-      "https://basa-lagbe.vercel.app/api/auth/refresh-token",
+      "https://basa-lagbe-server.vercel.app/api/auth/refresh-token",
       {
         method: "POST",
         credentials: "include",
