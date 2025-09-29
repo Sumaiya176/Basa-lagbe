@@ -87,11 +87,10 @@ const Register = () => {
 
         <div className="flex justify-center gap-8 mt-6">
           <button
-            onClick={() =>
-              signIn("google", {
-                callbackUrl: "http://localhost:3000",
-              })
-            }
+            onClick={() => {
+              window.location.href =
+                "hhttps://basa-lagbe-server.vercel.app/api/auth/google";
+            }}
           >
             {" "}
             <svg
@@ -122,11 +121,10 @@ const Register = () => {
           </button>
 
           <button
-            onClick={() =>
-              signIn("github", {
-                callbackUrl: "http://localhost:3000",
-              })
-            }
+            onClick={() => {
+              window.location.href =
+                "hhttps://basa-lagbe-server.vercel.app/api/auth/github";
+            }}
           >
             {" "}
             <svg
